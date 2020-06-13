@@ -1,0 +1,16 @@
+{
+  "name": "Colony",
+  "description": "Safe App for interacting with Colony",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "type": "image/png",
+      "sizes": "200x200"
+    }
+  ],
+  "iconPath": "logo.svg",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#f77423",
+  "background_color": "#ffffff"
+}
