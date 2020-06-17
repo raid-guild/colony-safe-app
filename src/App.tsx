@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, ReactElement } from "react";
 import styled, { ThemeProvider } from "styled-components";
 
-import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
-
+// import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
 import theme from "./theme";
 
-import { useAppsSdk } from "./hooks";
+// import { useAppsSdk } from "./hooks";
 import ColonyTabs from "./components/ColonyTabs";
-import ColonyTree from "./components/ColonyTree";
-import DomainTree from "./components/ColonyTree/DomainTree";
+import { useColonyClient } from "./contexts/ColonyContext";
 import SetRewardsModal from "./components/Modals/SetRewardsModal.tsx";
+import DomainTree from "./components/ColonyTree/DomainTree";
+import ColonyTree from "./components/ColonyTree";
 
 const OuterWrapper = styled.div`
   display: flex;
@@ -28,20 +28,23 @@ const LeftWrapper = styled.div`
 `;
 
 function ColonyWidget() {
+  const colonyClient = useColonyClient();
+
   /** State Variables **/
-  const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
+  // const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
   const [currentTab, setCurrentTab] = useState<number>(0);
 
-  const sideBar = () => {
+  if (!colonyClient) return null;
+  const sideBar = (): ReactElement | null => {
     switch (currentTab) {
       case 0:
         return <ColonyTree />;
       case 1:
-        return <DomainTree />;
+        return <DomainTree colonyClient={colonyClient} />;
       case 2:
         return <SetRewardsModal />;
       default:
-        break;
+        return null;
     }
   };
 

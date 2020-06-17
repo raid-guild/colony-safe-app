@@ -1,5 +1,8 @@
 import React from "react";
 import styled, { css } from "styled-components";
+
+import { DomainRoles } from "@colony/colony-js";
+
 import AdministrationIcon from "../../assets/permissions/administration.svg";
 import ArbitrationIcon from "../../assets/permissions/arbitration.svg";
 import ArchitectureIcon from "../../assets/permissions/architecture.svg";
@@ -19,11 +22,12 @@ const StyledIcon = styled.img`
 `;
 
 const icons = [RootIcon, RecoveryIcon, ArbitrationIcon, ArchitectureIcon, AdministrationIcon, FundingIcon];
-const PermissionIcons = ({ permissions }: { permissions: boolean[] }) => {
+const PermissionIcons = ({ permissions }: { permissions: DomainRoles }) => {
+  const { roles } = permissions;
   return (
     <>
-      {permissions.map((permission, index) => (
-        <StyledIcon src={icons[index]} alt="" active={permission} />
+      {icons.map((icon, index) => (
+        <StyledIcon src={icon} alt="" active={roles.includes(index)} />
       ))}
     </>
   );

@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+
+import { ColonyClient } from "@colony/colony-js";
+import { BigNumber } from "ethers/utils";
+
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
@@ -13,9 +17,25 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DomainTree() {
+type Domain = { skillId: BigNumber; fundingPotId: BigNumber; 0: BigNumber; 1: BigNumber };
+
+export default function DomainTree({ colonyClient }: { colonyClient: ColonyClient }) {
+  const [domains, setDomains] = useState<Domain[]>([]);
   const classes = useStyles();
 
+  useEffect(() => {
+    const getDomains = async () => {
+      const domainCount = colonyClient.getDomainCount;
+
+      const colonyDomains = await Promise.all(
+        [...Array(domainCount).keys()].map(domainIndex => colonyClient.getDomain(domainIndex)),
+      );
+      setDomains(colonyDomains);
+    };
+    getDomains();
+  }, [colonyClient]);
+
+  console.log(domains);
   return (
     <TreeView
       className={classes.root}

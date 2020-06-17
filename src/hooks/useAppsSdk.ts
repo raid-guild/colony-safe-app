@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import initSdk, { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
-import { Web3Provider } from "@ethersproject/providers";
+import { Web3Provider } from "ethers/providers";
 
 /**
  * Initialises the Gnosis Apps Sdk.
