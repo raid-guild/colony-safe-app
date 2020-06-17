@@ -1,10 +1,17 @@
 import React, { useState, ReactText } from "react";
-import { Button } from "@gnosis.pm/safe-react-components";
+import AdministrationIcon from "../../../assets/permissions/administration.svg";
+import ArbitrationIcon from "../../../assets/permissions/arbitration.svg";
+import ArchitectureIcon from "../../../assets/permissions/architecture.svg";
+import FundingIcon from "../../../assets/permissions/funding.svg";
+import RecoveryIcon from "../../../assets/permissions/recovery.svg";
+import RootIcon from "../../../assets/permissions/root.svg";
+
 import ManageListModal from "./Modal";
+import { shortenAddress } from "../../../utils";
 
 type Permission = {
   id: string;
-  iconUrl: string;
+  iconUrl: any;
   name: string;
   description: string;
   checked: boolean;
@@ -13,50 +20,57 @@ type Permission = {
 const permissions: Permission[] = [
   {
     id: "1",
-    iconUrl: "someUrl",
+    iconUrl: RootIcon,
     name: "Root",
     description: "",
     checked: true,
   },
   {
     id: "2",
-    iconUrl: "someUrl2",
+    iconUrl: RecoveryIcon,
     name: "Recovery",
     description: "",
     checked: true,
   },
   {
     id: "3",
-    iconUrl: "someUrl3",
+    iconUrl: ArbitrationIcon,
     name: "Arbitration",
     description: "",
     checked: true,
   },
   {
     id: "4",
-    iconUrl: "someUrl4",
+    iconUrl: ArchitectureIcon,
     name: "Architecture",
     description: "",
     checked: true,
   },
   {
     id: "5",
-    iconUrl: "someUrl5",
+    iconUrl: AdministrationIcon,
     name: "Administration",
     description: "",
     checked: true,
   },
   {
     id: "6",
-    iconUrl: "someUrl6",
+    iconUrl: FundingIcon,
     name: "Funding",
     description: "",
     checked: true,
   },
 ];
 
-const PermissionsModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const PermissionsModal = ({
+  isOpen,
+  setIsOpen,
+  address,
+}: {
+  isOpen: boolean;
+  setIsOpen: Function;
+  address: string;
+}) => {
   const [items, setItems] = useState(permissions);
 
   const onItemToggle = (itemId: ReactText, checked: boolean) => {
@@ -69,21 +83,16 @@ const PermissionsModal = () => {
     setItems(copy);
   };
 
+  if (!isOpen) return null;
   return (
-    <>
-      <Button size="md" color="primary" onClick={() => setIsOpen(!isOpen)}>
-        Toggle modal
-      </Button>
-      {isOpen && (
-        <ManageListModal
-          defaultIconUrl=""
-          itemList={items}
-          onSubmitForm={() => {}}
-          onClose={() => setIsOpen(false)}
-          onItemToggle={onItemToggle}
-        />
-      )}
-    </>
+    <ManageListModal
+      title={shortenAddress(address)}
+      defaultIconUrl=""
+      itemList={items}
+      onSubmitForm={() => console.log("submitted")}
+      onClose={() => setIsOpen(false)}
+      onItemToggle={onItemToggle}
+    />
   );
 };
 
