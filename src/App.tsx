@@ -1,8 +1,7 @@
 import React, { useState, ReactElement } from "react";
-import styled, { ThemeProvider } from "styled-components";
+import styled from "styled-components";
 
 // import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
-import theme from "./theme";
 
 // import { useAppsSdk } from "./hooks";
 import ColonyTabs from "./components/ColonyTabs";
@@ -49,12 +48,10 @@ function ColonyWidget() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <OuterWrapper>
-        <LeftWrapper>{sideBar()}</LeftWrapper>
-        <ColonyTabs currentTab={currentTab} setCurrentTab={setCurrentTab} />
-      </OuterWrapper>
-    </ThemeProvider>
+    <OuterWrapper>
+      <LeftWrapper>{sideBar()}</LeftWrapper>
+      <ColonyTabs currentTab={currentTab} setCurrentTab={setCurrentTab} />
+    </OuterWrapper>
   );
 }
 
