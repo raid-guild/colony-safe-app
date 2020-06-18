@@ -1,4 +1,4 @@
-import { BigNumberish } from "@ethersproject/bignumber";
+import { BigNumberish } from "ethers/utils";
 
 export type Token = {
   id: number;
