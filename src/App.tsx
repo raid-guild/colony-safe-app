@@ -2,6 +2,8 @@ import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 
 // import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
+import { CircularProgress } from "@material-ui/core";
+import { Title } from "@gnosis.pm/safe-react-components";
 
 // import { useAppsSdk } from "./hooks";
 import ColonyTabs from "./components/ColonyTabs";
@@ -26,6 +28,24 @@ const LeftWrapper = styled.div`
   }
 `;
 
+const LandingPageWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 24px;
+  width: calc(100% - 48px);
+  height: calc(100% - 32px);
+`;
+
+const LandingPage = (
+  <LandingPageWrapper>
+    <Title size="md">A platform for community collaboration.</Title>
+    <Title size="md">Do work, make decisions, and manage money, together.</Title>
+    <CircularProgress />
+  </LandingPageWrapper>
+);
+
 function ColonyWidget() {
   const colonyClient = useColonyClient();
 
@@ -33,7 +53,7 @@ function ColonyWidget() {
   // const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
   const [currentTab, setCurrentTab] = useState<number>(0);
 
-  if (!colonyClient) return null;
+  if (!colonyClient) return LandingPage;
   const sideBar = (): ReactElement | null => {
     switch (currentTab) {
       case 0:
