@@ -6,7 +6,7 @@ import { ColonyRoles, DomainRoles, getColonyRoles } from "@colony/colony-js";
 
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
-import Address from "../utils/Address";
+import Address from "../common/Address";
 import { useColonyClient } from "../../contexts/ColonyContext";
 
 const StyledTable = styled(Table)`
