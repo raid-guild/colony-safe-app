@@ -6,14 +6,20 @@ const TokenModal = ({
   isOpen,
   setIsOpen,
   token,
+  hasFundingRole,
 }: {
   isOpen: boolean;
   setIsOpen: Function;
   token: TokenItem;
+  hasFundingRole: boolean;
 }): ReactElement | null => {
   const modalTitle = `${token.label}`;
 
-  const modalBody = <>{`This is the ${token.label} modal`}</>;
+  const modalBody = (
+    <>{`This is the ${token.label} modal ${
+      hasFundingRole ? "This user can transfer funds" : "This user can't transfer funds"
+    }`}</>
+  );
 
   const modalFooter = (
     <ModalFooterConfirmation
