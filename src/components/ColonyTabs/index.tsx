@@ -1,15 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Tabs, Tab, Box } from "@material-ui/core";
 import styled from "styled-components";
-
-import { getColonyRoles, ColonyRoles } from "@colony/colony-js";
 
 import TokenList from "../TokenList";
 import { getTokenList } from "../../config/tokens";
 import PayoutList from "../PayoutList";
 import PermissionsList from "../PermissionsList";
-import { useColonyClient } from "../../contexts/ColonyContext";
 
 const TabsWrapper = styled.div`
   display: flex;
@@ -40,21 +37,9 @@ function TabPanel(props: any) {
 }
 
 const ColonyTabs = ({ currentTab, setCurrentTab }: { currentTab: number; setCurrentTab: Function }) => {
-  const colonyClient = useColonyClient();
-
-  const [roles, setRoles] = useState<ColonyRoles>([]);
-
   const handleChange = (event: any, newValue: number) => {
     setCurrentTab(newValue);
   };
-
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setRoles(newRoles));
-    } else {
-      setRoles([]);
-    }
-  }, [colonyClient]);
 
   return (
     <TabsWrapper>
@@ -67,7 +52,7 @@ const ColonyTabs = ({ currentTab, setCurrentTab }: { currentTab: number; setCurr
         <TokenList tokens={getTokenList("mainnet")} />
       </TabPanel>
       <TabPanel value={currentTab} index={1}>
-        <PermissionsList roles={roles} />
+        <PermissionsList />
       </TabPanel>
       <TabPanel value={currentTab} index={2}>
         <PayoutList tokens={getTokenList("mainnet")} />
