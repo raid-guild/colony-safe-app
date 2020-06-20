@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, ReactElement } from "react";
+import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@material-ui/core";
 import styled from "styled-components";
 
@@ -44,22 +44,22 @@ function TabPanel(props: any) {
   );
 }
 
+const SideBar = ({ currentTab }: { currentTab: number }) => {
+  switch (currentTab) {
+    case 0:
+      return <ColonyTree />;
+    case 1:
+      return <DomainTree />;
+    case 2:
+      return <SetRewardsModal />;
+    default:
+      return null;
+  }
+};
+
 const ColonyPage = () => {
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<number>(0);
-
-  const sideBar = (): ReactElement | null => {
-    switch (currentTab) {
-      case 0:
-        return <ColonyTree />;
-      case 1:
-        return <DomainTree />;
-      case 2:
-        return <SetRewardsModal />;
-      default:
-        return null;
-    }
-  };
 
   const handleChange = (_event: any, newValue: number) => {
     setCurrentTab(newValue);
@@ -67,7 +67,9 @@ const ColonyPage = () => {
 
   return (
     <OuterWrapper>
-      <LeftWrapper>{sideBar()}</LeftWrapper>
+      <LeftWrapper>
+        <SideBar currentTab={currentTab} />
+      </LeftWrapper>
       <TabsWrapper>
         <Tabs variant="fullWidth" value={currentTab} onChange={handleChange}>
           <Tab label="Tokens" />
