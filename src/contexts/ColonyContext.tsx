@@ -2,6 +2,7 @@ import React, { useState, createContext, ReactElement, useContext, useCallback, 
 
 import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
 import { InfuraProvider } from "ethers/providers";
+import { BigNumber } from "ethers/utils";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -65,6 +66,18 @@ export const useColonyClient = (): ColonyClient | undefined => {
 export const useSetColony = (): Function => {
   const { setColony } = useColonyContext();
   return setColony;
+};
+
+export const useColonyVersion = (): BigNumber => {
+  const colonyClient = useColonyClient();
+  const [colonyVersion, setColonyVersion] = useState<BigNumber>(new BigNumber(0));
+
+  useEffect(() => {
+    if (colonyClient) {
+      colonyClient.version().then((version: BigNumber) => setColonyVersion(version));
+    }
+  }, [colonyClient]);
+  return colonyVersion;
 };
 
 export default ColonyProvider;
