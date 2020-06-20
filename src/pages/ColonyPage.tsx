@@ -1,8 +1,6 @@
 import React, { useState, ReactElement } from "react";
 import styled from "styled-components";
 
-// import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
-
 import ColonyTabs from "../components/ColonyTabs";
 import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
 import DomainTree from "../components/ColonyTree/DomainTree";
@@ -27,7 +25,6 @@ const LeftWrapper = styled.div`
 
 function ColonyPage() {
   /** State Variables **/
-  // const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
   const [currentTab, setCurrentTab] = useState<number>(0);
 
   const sideBar = (): ReactElement | null => {

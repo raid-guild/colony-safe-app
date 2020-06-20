@@ -1,11 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
-import initSdk, { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
+import React, { useState, createContext, ReactElement, useContext, useEffect, useMemo } from "react";
+
+import initSdk, { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { Web3Provider } from "ethers/providers";
 
-/**
- * Initialises the Gnosis Apps Sdk.
- */
-function useAppsSdk(): [SdkInstance, SafeInfo | undefined] {
+interface Props {
+  children: ReactElement | ReactElement[];
+}
+
+interface State {
+  safeInfo?: SafeInfo;
+  appsSdk: SdkInstance;
+}
+
+export const SafeContext = createContext({} as State);
+
+export function useSafeContext(): State {
+  return useContext(SafeContext);
+}
+
+function SafeProvider({ children }: Props) {
+  /** State Variables **/
   const [safeInfo, setSafeInfo] = useState<SafeInfo>();
 
   const safeMultisigUrls: RegExp[] = useMemo(() => {
@@ -45,7 +59,17 @@ function useAppsSdk(): [SdkInstance, SafeInfo | undefined] {
     return () => appsSdk.removeListeners();
   }, [appsSdk]);
 
-  return [appsSdk, safeInfo];
+  return <SafeContext.Provider value={{ safeInfo, appsSdk }}>{children}</SafeContext.Provider>;
 }
 
-export default useAppsSdk;
+export const useSafeInfo = (): SafeInfo | undefined => {
+  const { safeInfo } = useSafeContext();
+  return safeInfo;
+};
+
+export const useAppsSdk = (): SdkInstance => {
+  const { appsSdk } = useSafeContext();
+  return appsSdk;
+};
+
+export default SafeProvider;
