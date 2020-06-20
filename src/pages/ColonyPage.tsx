@@ -61,9 +61,7 @@ const ColonyPage = () => {
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<number>(0);
 
-  const handleChange = (_event: any, newValue: number) => {
-    setCurrentTab(newValue);
-  };
+  const handleChange = (_event: any, newValue: number) => setCurrentTab(newValue);
 
   return (
     <OuterWrapper>
