@@ -7,7 +7,7 @@ import ColonyPage from "./pages/ColonyPage";
 function ColonyWidget() {
   const colonyClient = useColonyClient();
 
-  return colonyClient ? <ColonyPage colonyClient={colonyClient} /> : <LandingPage />;
+  return colonyClient ? <ColonyPage /> : <LandingPage />;
 }
 
 export default ColonyWidget;

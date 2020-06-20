@@ -49,12 +49,11 @@ const ColonyTabs = ({ currentTab, setCurrentTab }: { currentTab: number; setCurr
   };
 
   useEffect(() => {
-    const getRoles = async () => {
-      if (!colonyClient) return;
-      const newRoles = await getColonyRoles(colonyClient);
-      setRoles(newRoles);
-    };
-    getRoles();
+    if (colonyClient) {
+      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setRoles(newRoles));
+    } else {
+      setRoles([]);
+    }
   }, [colonyClient]);
 
   return (

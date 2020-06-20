@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 // import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
 
-import { ColonyClient } from "@colony/colony-js";
 import ColonyTabs from "../components/ColonyTabs";
 import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
 import DomainTree from "../components/ColonyTree/DomainTree";
@@ -25,7 +24,7 @@ const LeftWrapper = styled.div`
   }
 `;
 
-function ColonyPage({ colonyClient }: { colonyClient: ColonyClient }) {
+function ColonyPage() {
   /** State Variables **/
   // const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
   const [currentTab, setCurrentTab] = useState<number>(0);
@@ -35,7 +34,7 @@ function ColonyPage({ colonyClient }: { colonyClient: ColonyClient }) {
       case 0:
         return <ColonyTree />;
       case 1:
-        return <DomainTree colonyClient={colonyClient} />;
+        return <DomainTree />;
       case 2:
         return <SetRewardsModal />;
       default:

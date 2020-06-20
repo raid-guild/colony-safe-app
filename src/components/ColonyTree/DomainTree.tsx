@@ -8,6 +8,8 @@ import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import StyledTreeItem from "./StyledTreeItem";
+import { useColonyClient } from "../../contexts/ColonyContext";
+import getColonyDomains from "../../utils/colony/getColonyDomains";
 
 const useStyles = makeStyles({
   root: {
@@ -19,20 +21,17 @@ const useStyles = makeStyles({
 
 type Domain = { skillId: BigNumber; fundingPotId: BigNumber; 0: BigNumber; 1: BigNumber };
 
-export default function DomainTree({ colonyClient }: { colonyClient: ColonyClient }) {
+export default function DomainTree() {
+  const colonyClient: ColonyClient | undefined = useColonyClient();
   const [domains, setDomains] = useState<Domain[]>([]);
   const classes = useStyles();
 
   useEffect(() => {
-    const getDomains = async () => {
-      const domainCount = colonyClient.getDomainCount;
-
-      const colonyDomains = await Promise.all(
-        [...Array(domainCount).keys()].map(domainIndex => colonyClient.getDomain(domainIndex)),
-      );
-      setDomains(colonyDomains);
-    };
-    getDomains();
+    if (colonyClient) {
+      getColonyDomains(colonyClient).then((newDomains: Domain[]) => setDomains(newDomains));
+    } else {
+      setDomains([]);
+    }
   }, [colonyClient]);
 
   console.log(domains);
