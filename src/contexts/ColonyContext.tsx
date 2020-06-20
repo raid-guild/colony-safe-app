@@ -57,12 +57,12 @@ function ColonyProvider({ children }: Props) {
   return <ColonyContext.Provider value={{ colonyClient, setColony }}>{children}</ColonyContext.Provider>;
 }
 
-export const useColonyClient = () => {
+export const useColonyClient = (): ColonyClient | undefined => {
   const { colonyClient } = useColonyContext();
   return colonyClient;
 };
 
-export const useSetColony = () => {
+export const useSetColony = (): Function => {
   const { setColony } = useColonyContext();
   return setColony;
 };
