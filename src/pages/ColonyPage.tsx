@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@material-ui/core";
 import styled from "styled-components";
 
-import { getTokenList } from "../config/tokens";
+import { useTokens } from "../hooks/useTokens";
 
 import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
 import DomainTree from "../components/ColonyTree/DomainTree";
@@ -58,6 +58,7 @@ const SideBar = ({ currentTab }: { currentTab: number }) => {
 };
 
 const ColonyPage = () => {
+  const tokens = useTokens();
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<number>(0);
 
@@ -75,13 +76,13 @@ const ColonyPage = () => {
           <Tab label="Rewards" />
         </Tabs>
         <TabPanel value={currentTab} index={0}>
-          <TokenList tokens={getTokenList("mainnet")} />
+          <TokenList tokens={tokens} />
         </TabPanel>
         <TabPanel value={currentTab} index={1}>
           <PermissionsList />
         </TabPanel>
         <TabPanel value={currentTab} index={2}>
-          <PayoutList tokens={getTokenList("mainnet")} />
+          <PayoutList tokens={tokens} />
         </TabPanel>
       </TabsWrapper>
     </OuterWrapper>
