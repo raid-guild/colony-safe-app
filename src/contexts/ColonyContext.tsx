@@ -37,18 +37,18 @@ function ColonyProvider({ children }: Props) {
   }, [network]);
 
   const setColony = useCallback(
-    async (newColonyIndex: number): Promise<void> => {
+    async (colonyEnsName: string): Promise<void> => {
       if (!networkClient) return;
 
       // TODO: resolve an ens name to a colony address. This will then be passed to getColonyClient
+      console.log(`Finding address of ${colonyEnsName}`);
+      const provider = new InfuraProvider(network, process.env.REACT_APP_INFURA_KEY);
+      const colonyAddress = await provider.resolveName(colonyEnsName);
 
-      // console.log(`Finding ${colonyEnsName}.colony.joincolony.eth`);
-      // const colonyAddress = await provider.resolveName(`${colonyEnsName}.colony.joincolony.eth`);
+      console.log(`${colonyEnsName} address: ${colonyAddress}`);
+      const newColonyClient = await networkClient.getColonyClient(colonyAddress);
 
-      // console.log(`${colonyEnsName} address: ${colonyAddress}`);
-      const newColonyClient = await networkClient.getColonyClient(newColonyIndex);
-
-      console.log("Meta Colony address:", newColonyClient.address);
+      console.log("Colony address:", newColonyClient.address);
       setColonyClient(newColonyClient);
     },
     [networkClient],
