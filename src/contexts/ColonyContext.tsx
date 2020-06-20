@@ -1,6 +1,6 @@
-import React, { useState, useEffect, createContext, ReactElement, useContext } from "react";
+import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect } from "react";
 
-import { getColonyNetworkClient, Network, ColonyClient } from "@colony/colony-js";
+import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
 import { InfuraProvider } from "ethers/providers";
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
 }
 
 interface State {
+  setColony: Function;
   colonyClient?: ColonyClient;
 }
 
@@ -20,33 +21,50 @@ export function useColonyContext(): State {
 function ColonyProvider({ children }: Props) {
   /** State Variables **/
   const [colonyClient, setColonyClient] = useState<ColonyClient>();
+  const [networkClient, setNetworkClient] = useState<NetworkClient>();
 
+  const network = "goerli";
   useEffect(() => {
-    const getColonyClient = async () => {
-      // if (!safeInfo?.network) return;
-
-      const provider = new InfuraProvider("goerli", process.env.REACT_APP_INFURA_KEY);
+    const getNetworkClient = async () => {
+      const provider = new InfuraProvider(network, process.env.REACT_APP_INFURA_KEY);
       // Get a network client instance
-      const networkClient = await getColonyNetworkClient(Network.Goerli, provider);
-
+      const newNetworkClient = await getColonyNetworkClient(Network.Goerli, provider);
       // Check out the logs to see the network address
-      console.log("Network Address:", networkClient.address);
+      console.log("Network Address:", newNetworkClient.address);
+      setNetworkClient(newNetworkClient);
+    };
+    getNetworkClient();
+  }, [network]);
 
-      // Get the colony client for the Meta Colony
-      const newColonyClient = await networkClient.getColonyClient(2);
+  const setColony = useCallback(
+    async (newColonyIndex: number): Promise<void> => {
+      if (!networkClient) return;
+
+      // TODO: resolve an ens name to a colony address. This will then be passed to getColonyClient
+
+      // console.log(`Finding ${colonyEnsName}.colony.joincolony.eth`);
+      // const colonyAddress = await provider.resolveName(`${colonyEnsName}.colony.joincolony.eth`);
+
+      // console.log(`${colonyEnsName} address: ${colonyAddress}`);
+      const newColonyClient = await networkClient.getColonyClient(newColonyIndex);
 
       console.log("Meta Colony address:", newColonyClient.address);
       setColonyClient(newColonyClient);
-    };
-    getColonyClient();
-  }, []);
+    },
+    [networkClient],
+  );
 
-  return <ColonyContext.Provider value={{ colonyClient }}>{children}</ColonyContext.Provider>;
+  return <ColonyContext.Provider value={{ colonyClient, setColony }}>{children}</ColonyContext.Provider>;
 }
 
 export const useColonyClient = () => {
   const { colonyClient } = useColonyContext();
   return colonyClient;
+};
+
+export const useSetColony = () => {
+  const { setColony } = useColonyContext();
+  return setColony;
 };
 
 export default ColonyProvider;
