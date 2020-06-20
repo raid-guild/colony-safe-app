@@ -1,6 +1,7 @@
 import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect } from "react";
 
 import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
+import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
 
@@ -78,6 +79,32 @@ export const useColonyVersion = (): BigNumber => {
     }
   }, [colonyClient]);
   return colonyVersion;
+};
+
+export const useNativeTokenAddress = () => {
+  const colonyClient = useColonyClient();
+  const [nativeTokenAddress, setNativeTokenAddress] = useState<string>();
+
+  useEffect(() => {
+    if (colonyClient) {
+      colonyClient.getToken().then((address: string) => setNativeTokenAddress(address));
+    }
+  }, [colonyClient]);
+
+  return nativeTokenAddress;
+};
+
+export const useNativeTokenInfo = () => {
+  const colonyClient = useColonyClient();
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo>();
+
+  useEffect(() => {
+    if (colonyClient) {
+      colonyClient.tokenClient.getTokenInfo().then((info: TokenInfo) => setTokenInfo(info));
+    }
+  }, [colonyClient]);
+
+  return tokenInfo;
 };
 
 export default ColonyProvider;
