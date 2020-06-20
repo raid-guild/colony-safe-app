@@ -18,6 +18,7 @@ const OuterWrapper = styled.div`
 const LeftWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
+  min-width: 120px;
 
   :first-child {
     margin-top: 80px;
