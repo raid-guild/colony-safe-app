@@ -32,7 +32,6 @@ export default function DomainTree() {
     }
   }, [colonyClient]);
 
-  console.log(domains);
   return (
     <TreeView
       className={classes.root}
