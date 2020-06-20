@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import { ColonyClient } from "@colony/colony-js";
 import StyledTreeItem from "./StyledTreeItem";
+import getColonyDomains from "../../utils/colony/getColonyDomains";
+import { Domain } from "../../typings";
+import { useColonyClient } from "../../contexts/ColonyContext";
+import DomainTreeItems from "./DomainTreeItems";
 
 const useStyles = makeStyles({
   root: {
@@ -14,7 +19,17 @@ const useStyles = makeStyles({
 });
 
 export default function ColonyTree() {
+  const colonyClient: ColonyClient | undefined = useColonyClient();
+  const [domains, setDomains] = useState<Domain[]>([]);
   const classes = useStyles();
+
+  useEffect(() => {
+    if (colonyClient) {
+      getColonyDomains(colonyClient).then((newDomains: Domain[]) => setDomains(newDomains));
+    } else {
+      setDomains([]);
+    }
+  }, [colonyClient]);
 
   return (
     <TreeView
@@ -26,10 +41,7 @@ export default function ColonyTree() {
     >
       <StyledTreeItem nodeId="1" labelText="Entire Colony" />
       <StyledTreeItem nodeId="2" labelText="Rewards Pot" />
-      <StyledTreeItem nodeId="3" labelText="Root Domain">
-        <StyledTreeItem nodeId="4" labelText="Domain #1" />
-        <StyledTreeItem nodeId="5" labelText="Domain #2" />
-      </StyledTreeItem>
+      <DomainTreeItems domains={domains} />
     </TreeView>
   );
 }
