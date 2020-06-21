@@ -1,7 +1,7 @@
 import { BigNumberish, BigNumber } from "ethers/utils";
 
 export type Token = {
-  id: number;
+  address: string;
   decimals: number;
   name: string;
   symbol: string;

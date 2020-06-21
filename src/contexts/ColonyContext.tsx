@@ -1,9 +1,11 @@
 import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect } from "react";
 
 import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
-import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
+import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
+import getColonyTokens from "../utils/colony/getColonyTokens";
+import { Token } from "../typings";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -105,6 +107,48 @@ export const useNativeTokenInfo = () => {
   }, [colonyClient]);
 
   return tokenInfo;
+};
+
+export const useTokens = () => {
+  const colonyClient = useColonyClient();
+  const [tokens, setTokens] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (colonyClient) {
+      getColonyTokens(colonyClient).then((tokenAddresses: string[]) => setTokens(tokenAddresses));
+    }
+  }, [colonyClient]);
+
+  return tokens;
+};
+
+export const useTokensInfo = () => {
+  const colonyClient = useColonyClient();
+  const tokens = useTokens();
+  const [tokensInfo, setTokensInfo] = useState<Token[]>([]);
+
+  useEffect(() => {
+    if (colonyClient && tokens.length > 0) {
+      Promise.all(
+        tokens.map(async (tokenAddress: string) => {
+          if (tokenAddress === "0x0000000000000000000000000000000000000000") {
+            return {
+              address: "0x0000000000000000000000000000000000000000",
+              name: "Ether",
+              symbol: "ETH",
+              decimals: 18,
+            };
+          }
+          return {
+            address: tokenAddress,
+            ...(await getTokenClient(tokenAddress, colonyClient.provider).getTokenInfo()),
+          };
+        }),
+      ).then(newTokensInfo => setTokensInfo(newTokensInfo));
+    }
+  }, [colonyClient, tokens]);
+
+  return tokensInfo;
 };
 
 export default ColonyProvider;

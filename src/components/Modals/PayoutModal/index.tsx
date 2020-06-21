@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { GenericModal, ModalFooterConfirmation, Text } from "@gnosis.pm/safe-react-components";
-import { TokenItem } from "../../../config/tokens";
+import { Token } from "../../../typings";
 
 const PayoutModal = ({
   isOpen,
@@ -9,11 +9,11 @@ const PayoutModal = ({
 }: {
   isOpen: boolean;
   setIsOpen: Function;
-  token: TokenItem;
+  token: Token;
 }): ReactElement | null => {
   const modalBody = (
     <>
-      <Text size="md"> {`Your share of the 2,000.00 ${token.label} payout is ~359.00 ${token.label}`} </Text>
+      <Text size="md"> {`Your share of the 2,000.00 ${token.symbol} payout is ~359.00 ${token.symbol}`} </Text>
     </>
   );
 
@@ -29,7 +29,7 @@ const PayoutModal = ({
   return (
     <GenericModal
       onClose={() => setIsOpen(false)}
-      title={`${token.label} Payout`}
+      title={`${token.symbol} Payout`}
       body={modalBody}
       footer={modalFooter}
     />
