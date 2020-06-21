@@ -1,6 +1,7 @@
 import { ColonyClient } from "@colony/colony-js";
+import { Domain } from "../../typings";
 
-const getColonyDomains = async (client: ColonyClient) => {
+const getColonyDomains = async (client: ColonyClient): Promise<Domain[]> => {
   const domainCount = await client.getDomainCount();
 
   // Domains are 1 indexed so we add a shift
