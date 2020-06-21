@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { ModalFooterConfirmation, GenericModal } from "@gnosis.pm/safe-react-components";
-import { TokenItem } from "../../../config/tokens";
+import { Token } from "../../../typings";
 
 const TokenModal = ({
   isOpen,
@@ -10,13 +10,13 @@ const TokenModal = ({
 }: {
   isOpen: boolean;
   setIsOpen: Function;
-  token: TokenItem;
+  token: Token;
   hasFundingRole: boolean;
 }): ReactElement | null => {
-  const modalTitle = `${token.label}`;
+  const modalTitle = `${token.symbol}`;
 
   const modalBody = (
-    <>{`This is the ${token.label} modal ${
+    <>{`This is the ${token.symbol} modal ${
       hasFundingRole ? "This user can transfer funds" : "This user can't transfer funds"
     }`}</>
   );

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@material-ui/core";
 import styled from "styled-components";
 
-import { useTokens } from "../hooks/useTokens";
+import { useTokensInfo } from "../contexts/ColonyContext";
 
 import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
 import DomainTree from "../components/ColonyTree/DomainTree";
@@ -58,7 +58,7 @@ const SideBar = ({ currentTab }: { currentTab: number }) => {
 };
 
 const ColonyPage = () => {
-  const tokens = useTokens();
+  const tokens = useTokensInfo();
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<number>(0);
 
