@@ -28,7 +28,7 @@ const LandingPage = () => {
         <Button
           onClick={() => {
             setClicked(true);
-            setColony("fellowship.colony.joincolony.test"); // Temporary value. This should take the user-inputted value from a text field
+            setColony("beta.colony.joincolony.eth"); // Temporary value. This should take the user-inputted value from a text field
           }}
         >
           click me

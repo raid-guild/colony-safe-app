@@ -25,12 +25,12 @@ function ColonyProvider({ children }: Props) {
   const [colonyClient, setColonyClient] = useState<ColonyClient>();
   const [networkClient, setNetworkClient] = useState<NetworkClient>();
 
-  const network = "goerli";
+  const network = "mainnet";
   useEffect(() => {
     const getNetworkClient = async () => {
       const provider = new InfuraProvider(network, process.env.REACT_APP_INFURA_KEY);
       // Get a network client instance
-      const newNetworkClient = await getColonyNetworkClient(Network.Goerli, provider);
+      const newNetworkClient = await getColonyNetworkClient(Network.Mainnet, provider);
       // Check out the logs to see the network address
       console.log("Network Address:", newNetworkClient.address);
       setNetworkClient(newNetworkClient);
