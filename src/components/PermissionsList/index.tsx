@@ -18,7 +18,7 @@ const AddressRow = ({ address, permissions }: { address: string; permissions: Do
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address={address} />
+      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address={address} permissions={permissions.roles} />
       <TableRow onClick={() => setIsOpen(true)}>
         <TableCell>
           <Address address={address} />
