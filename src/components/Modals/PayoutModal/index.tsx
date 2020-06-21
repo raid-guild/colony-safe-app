@@ -1,5 +1,6 @@
 import React, { ReactElement } from "react";
-import { GenericModal, ModalFooterConfirmation, Text } from "@gnosis.pm/safe-react-components";
+import { GenericModal, Text } from "@gnosis.pm/safe-react-components";
+import ModalFooter from "./ModalFooter";
 import { Token } from "../../../typings";
 
 const PayoutModal = ({
@@ -18,13 +19,14 @@ const PayoutModal = ({
   );
 
   const modalFooter = (
-    <ModalFooterConfirmation
-      okText="Save"
-      // okDisabled={false}
-      handleCancel={() => setIsOpen(false)}
-      handleOk={() => console.log("Clicked ok!")}
+    <ModalFooter
+      cancelText="Waive"
+      okText="Claim"
+      handleCancel={() => console.log("Waiving Reward!")}
+      handleOk={() => console.log("Claiming Reward!")}
     />
   );
+
   if (!isOpen) return null;
   return (
     <GenericModal

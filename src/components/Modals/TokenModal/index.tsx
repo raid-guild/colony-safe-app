@@ -1,6 +1,7 @@
-import React, { ReactElement } from "react";
-import { Text, ModalFooterConfirmation, GenericModal } from "@gnosis.pm/safe-react-components";
+import React, { ReactElement, useState } from "react";
+import { ModalFooterConfirmation, GenericModal } from "@gnosis.pm/safe-react-components";
 import { Token } from "../../../typings";
+import TokenModalBody from "./TokenModalBody";
 
 const TokenModal = ({
   isOpen,
@@ -17,20 +18,14 @@ const TokenModal = ({
   hasAdministrationRole: boolean;
   hasFundingRole: boolean;
 }): ReactElement | null => {
-  const modalTitle = `${token.symbol}`;
+  /** State Variables **/
+  const [currentTab, setCurrentTab] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("");
 
-  const modalBody = (
-    <>
-      <Text size="lg">{`This is the ${token.symbol} modal`}</Text>
-      <Text size="lg">{hasRootRole ? "This user can mint colony tokens" : "This user can't mint colony tokens"}</Text>
-      <Text size="lg">
-        {hasAdministrationRole ? "This user can initiate payments" : "This user can't initiate payments"}
-      </Text>
-      <Text size="lg">
-        {hasFundingRole ? "This user can transfer funds between pots" : "This user can't transfer funds between pots"}
-      </Text>
-    </>
-  );
+  const handleChangeAmount = (event: any) => setAmount(event.target.value);
+  const handleChangeTab = (_event: any, newValue: number) => setCurrentTab(newValue);
+
+  const modalTitle = `${token.symbol}`;
 
   const modalFooter = (
     <ModalFooterConfirmation
@@ -42,7 +37,25 @@ const TokenModal = ({
   );
 
   if (!isOpen) return null;
-  return <GenericModal onClose={() => setIsOpen(false)} title={modalTitle} body={modalBody} footer={modalFooter} />;
+  return (
+    <GenericModal
+      onClose={() => setIsOpen(false)}
+      title={modalTitle}
+      body={
+        <TokenModalBody
+          currentTab={currentTab}
+          handleChangeTab={handleChangeTab}
+          amount={amount}
+          handleChangeAmount={handleChangeAmount}
+          token={token}
+          hasRootRole={hasRootRole}
+          hasAdministrationRole={hasAdministrationRole}
+          hasFundingRole={hasFundingRole}
+        />
+      }
+      footer={modalFooter}
+    />
+  );
 };
 
 export default TokenModal;
