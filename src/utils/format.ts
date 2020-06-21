@@ -1,5 +1,4 @@
-import { formatUnits } from "@ethersproject/units";
-import { BigNumberish } from "@ethersproject/bignumber";
+import { BigNumberish, formatUnits } from "ethers/utils";
 
 export function bigNumberToHumanFormat(
   value: BigNumberish,
