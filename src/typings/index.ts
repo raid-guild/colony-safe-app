@@ -1,4 +1,4 @@
-import { BigNumberish } from "@ethersproject/bignumber";
+import { BigNumberish, BigNumber } from "ethers/utils";
 
 export type Token = {
   id: number;
@@ -12,3 +12,5 @@ export type Transaction = {
   to: string;
   value: BigNumberish;
 };
+
+export type Domain = { skillId: BigNumber; fundingPotId: BigNumber; 0: BigNumber; 1: BigNumber };

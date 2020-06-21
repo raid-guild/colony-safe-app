@@ -1,25 +1,13 @@
 import React from "react";
-import { ThemeProvider } from "styled-components";
 
-import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
-
-import WidgetWrapper from "./components/WidgetWrapper";
-import theme from "./theme";
-
-import { useAppsSdk } from "./hooks";
-
+import { useColonyClient } from "./contexts/ColonyContext";
+import LandingPage from "./pages/LandingPage";
+import ColonyPage from "./pages/ColonyPage";
 
 function ColonyWidget() {
-  
-  /** State Variables **/
-  const [appsSdk, safeInfo]: [SdkInstance, SafeInfo | undefined] = useAppsSdk();
+  const colonyClient = useColonyClient();
 
-  return (
-    <ThemeProvider theme={theme}>
-      <WidgetWrapper>
-      </WidgetWrapper>
-    </ThemeProvider>
-  );
+  return colonyClient ? <ColonyPage /> : <LandingPage />;
 }
 
 export default ColonyWidget;
