@@ -41,7 +41,7 @@ export default function ColonyTree() {
     >
       <StyledTreeItem nodeId="1" labelText="Entire Colony" />
       <StyledTreeItem nodeId="2" labelText="Rewards Pot" />
-      <DomainTreeItems domains={domains} />
+      <DomainTreeItems domains={domains} startNoteId={3} />
     </TreeView>
   );
 }
