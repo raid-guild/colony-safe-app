@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from "react";
-import { Table, TableRow, TableCell } from "@material-ui/core";
+import React, { useMemo, useState, useCallback } from "react";
+import { Table, TableRow, TableCell, Tooltip } from "@material-ui/core";
 import styled from "styled-components";
 
-import { ColonyRoles, DomainRoles } from "@colony/colony-js";
+import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
-import { useColonyRoles } from "../../contexts/ColonyContext";
+import { useColonyRoles, useHasDomainPermission } from "../../contexts/ColonyContext";
+import { useSafeInfo } from "../../contexts/SafeContext";
 
 const StyledTable = styled(Table)`
   min-width: 480px;
@@ -20,19 +21,52 @@ const UnderlinedTableRow = styled(TableRow)`
   border-bottom-style: solid;
 `;
 
-const AddressRow = ({ address, permissions }: { address: string; permissions: DomainRoles }) => {
+const AddressRow = ({
+  address,
+  permissions,
+  hasAdminPermission,
+}: {
+  address: string;
+  permissions: DomainRoles;
+  hasAdminPermission: boolean;
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showToolTip, setShowToolTip] = useState<boolean>(false);
+
+  const handleClick = useCallback(() => {
+    if (hasAdminPermission) {
+      setIsOpen(true);
+    } else {
+      setShowToolTip(true);
+      setTimeout(() => setShowToolTip(false), 1500);
+    }
+  }, [hasAdminPermission]);
+
   return (
     <>
-      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address={address} permissions={permissions.roles} />
-      <TableRow onClick={() => setIsOpen(true)}>
-        <TableCell>
-          <Address address={address} />
-        </TableCell>
-        <TableCell align="right">
-          <PermissionIcons permissions={permissions} />
-        </TableCell>
-      </TableRow>
+      <PermissionsModal
+        isOpen={hasAdminPermission && isOpen}
+        setIsOpen={setIsOpen}
+        address={address}
+        permissions={permissions.roles}
+      />
+      <Tooltip
+        open={showToolTip}
+        placement="top"
+        title="You don't have the permissions to change this"
+        disableFocusListener
+        disableHoverListener
+        disableTouchListener
+      >
+        <TableRow onClick={handleClick}>
+          <TableCell>
+            <Address address={address} />
+          </TableCell>
+          <TableCell align="right">
+            <PermissionIcons permissions={permissions} />
+          </TableCell>
+        </TableRow>
+      </Tooltip>
     </>
   );
 };
@@ -55,16 +89,23 @@ const AddAddressRow = () => {
 };
 
 const PermissionsList = () => {
+  const safeInfo = useSafeInfo();
+  const hasAdminPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Administration);
   const roles: ColonyRoles = useColonyRoles();
 
   const addressList = useMemo(
-    () => roles.map(({ address, domains }) => <AddressRow address={address} permissions={domains[0]} />),
-    [roles],
+    () =>
+      roles.map(({ address, domains }) => (
+        <AddressRow address={address} permissions={domains[0]} hasAdminPermission={hasAdminPermission} />
+      )),
+    [roles, hasAdminPermission],
   );
+
+  console.log(hasAdminPermission);
 
   return (
     <StyledTable>
-      <AddAddressRow />
+      {hasAdminPermission && <AddAddressRow />}
       {addressList.length > 0 ? (
         addressList
       ) : (
