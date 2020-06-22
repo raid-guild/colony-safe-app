@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { Tabs, Tab, Box } from "@material-ui/core";
 import styled from "styled-components";
 
@@ -62,7 +62,7 @@ const ColonyPage = () => {
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<number>(0);
 
-  const handleChange = (_event: any, newValue: number) => setCurrentTab(newValue);
+  const handleChange = (_event: ChangeEvent<{}>, newValue: number) => setCurrentTab(newValue);
 
   return (
     <OuterWrapper>
