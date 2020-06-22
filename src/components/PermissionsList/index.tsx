@@ -10,7 +10,7 @@ import Address from "../common/Address";
 import { useColonyClient } from "../../contexts/ColonyContext";
 
 const StyledTable = styled(Table)`
-  min-width: 450px;
+  min-width: 480px;
   box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
 `;
 
