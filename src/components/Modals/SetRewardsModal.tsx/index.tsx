@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { Button, GenericModal, TextField, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
 
 const SetRewardsModal = () => {
@@ -11,7 +11,7 @@ const SetRewardsModal = () => {
       <TextField
         label="Rewards Percentage"
         value={rewardsPercentage}
-        onChange={(e: any): void => setRewardsPercentage(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>): void => setRewardsPercentage(e.target.value)}
       />
     </>
   );

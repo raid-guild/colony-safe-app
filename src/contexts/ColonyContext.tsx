@@ -44,19 +44,26 @@ function ColonyProvider({ children }: Props) {
     async (colonyEnsName: string): Promise<void> => {
       if (!networkClient) return;
 
-      // TODO: resolve an ens name to a colony address. This will then be passed to getColonyClient
       console.log(`Finding address of ${colonyEnsName}`);
       const provider = new InfuraProvider(network, process.env.REACT_APP_INFURA_KEY);
       const colonyAddress = await provider.resolveName(colonyEnsName);
 
       console.log(`${colonyEnsName} address: ${colonyAddress}`);
-      const newColonyClient = await networkClient.getColonyClient(colonyAddress);
 
-      console.log("Colony address:", newColonyClient.address);
-      setColonyClient(newColonyClient);
+      try {
+        const newColonyClient = await networkClient.getColonyClient(colonyAddress);
+        console.log("Colony address:", newColonyClient.address);
+        setColonyClient(newColonyClient);
+      } catch (e) {
+        console.warn("Could not find colony", e);
+      }
     },
     [networkClient],
   );
+
+  useEffect(() => {
+    if (process.env.REACT_APP_COLONY_ENS_NAME) setColony(process.env.REACT_APP_COLONY_ENS_NAME);
+  }, [setColony]);
 
   return <ColonyContext.Provider value={{ colonyClient, setColony }}>{children}</ColonyContext.Provider>;
 }
