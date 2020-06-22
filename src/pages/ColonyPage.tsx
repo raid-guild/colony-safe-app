@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { useTokensInfo } from "../contexts/ColonyContext";
 
-import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
+import PayoutSidebar from "../components/PayoutList/Sidebar";
 import DomainTree from "../components/ColonyTree/DomainTree";
 import ColonyTree from "../components/ColonyTree";
 import TokenList from "../components/TokenList";
@@ -83,7 +83,7 @@ const ColonyPage = () => {
         </TabPanel>
         <TabPanel value={currentTab} index={TabsLabels.Rewards}>
           <LeftWrapper>
-            <SetRewardsModal />
+            <PayoutSidebar />
           </LeftWrapper>
           <PayoutList tokens={tokens} />
         </TabPanel>
