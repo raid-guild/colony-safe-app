@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import styled from "styled-components";
 
 import { CircularProgress, Button } from "@material-ui/core";
-import { Title } from "@gnosis.pm/safe-react-components";
+import { Title, TextField } from "@gnosis.pm/safe-react-components";
 import { useSetColony } from "../contexts/ColonyContext";
 
 const LandingPageWrapper = styled.div`
@@ -15,10 +15,38 @@ const LandingPageWrapper = styled.div`
   height: calc(100% - 32px);
 `;
 
-const LandingPage = () => {
+const ColonyNameInputWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+const ColonyENSInput = () => {
   const setColony = useSetColony();
+  const [ensName, setEnsName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
 
+  if (clicked) return <CircularProgress />;
+  return (
+    <ColonyNameInputWrapper>
+      <TextField
+        label="Colony Name"
+        value={ensName}
+        onChange={(e: ChangeEvent<HTMLInputElement>): void => setEnsName(e.target.value)}
+      />
+      <Button
+        onClick={() => {
+          setClicked(true);
+          setColony(`${ensName}.colony.joincolony.eth`);
+        }}
+      >
+        click me
+      </Button>
+    </ColonyNameInputWrapper>
+  );
+};
+
+const LandingPage = () => {
   // If we have a predefined colony then there is no need to display other elements
   if (process.env.REACT_APP_COLONY_ENS_NAME) {
     return (
@@ -32,18 +60,7 @@ const LandingPage = () => {
     <LandingPageWrapper>
       <Title size="md">A platform for community collaboration.</Title>
       <Title size="md">Do work, make decisions, and manage money, together.</Title>
-      {clicked ? (
-        <CircularProgress />
-      ) : (
-        <Button
-          onClick={() => {
-            setClicked(true);
-            setColony("beta.colony.joincolony.eth"); // Temporary value. This should take the user-inputted value from a text field
-          }}
-        >
-          click me
-        </Button>
-      )}
+      <ColonyENSInput />
     </LandingPageWrapper>
   );
 };
