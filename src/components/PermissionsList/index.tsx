@@ -101,8 +101,6 @@ const PermissionsList = () => {
     [roles, hasAdminPermission],
   );
 
-  console.log(hasAdminPermission);
-
   return (
     <StyledTable>
       {hasAdminPermission && <AddAddressRow />}
