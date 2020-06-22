@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { ColonyRoles, DomainRoles } from "@colony/colony-js";
 
+import { Text, Icon } from "@gnosis.pm/safe-react-components";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
@@ -12,6 +13,11 @@ import { useColonyRoles } from "../../contexts/ColonyContext";
 const StyledTable = styled(Table)`
   min-width: 480px;
   box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
+`;
+
+const UnderlinedTableRow = styled(TableRow)`
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
 `;
 
 const AddressRow = ({ address, permissions }: { address: string; permissions: DomainRoles }) => {
@@ -31,6 +37,22 @@ const AddressRow = ({ address, permissions }: { address: string; permissions: Do
   );
 };
 
+const AddAddressRow = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  return (
+    <>
+      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
+        <TableCell>
+          <Text size="lg">Add Account</Text>
+        </TableCell>
+        <TableCell align="right">
+          <Icon type="add" size="md" />
+        </TableCell>
+      </UnderlinedTableRow>
+    </>
+  );
+};
+
 const PermissionsList = () => {
   const roles: ColonyRoles = useColonyRoles();
 
@@ -41,6 +63,7 @@ const PermissionsList = () => {
 
   return (
     <StyledTable>
+      <AddAddressRow />
       {addressList.length > 0 ? (
         addressList
       ) : (
