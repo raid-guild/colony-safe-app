@@ -1,16 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Table, TableRow, TableCell } from "@material-ui/core";
-import styled from "styled-components";
+import { TableRow, TableCell } from "@material-ui/core";
 import { ColonyRole } from "@colony/colony-js";
+import Table from "../common/StyledTable";
+
 import TokenModal from "../Modals/TokenModal";
 import { useHasDomainPermission } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token } from "../../typings";
-
-const StyledTable = styled(Table)`
-  min-width: 480px;
-  box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
-`;
 
 const TokenRow = ({ token, hasFundingRole }: { token: Token; hasFundingRole: boolean }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -34,7 +30,7 @@ const TokenList = ({ tokens }: { tokens: Token[] }) => {
     [tokens, hasFundingPermission],
   );
 
-  return <StyledTable>{tokenList}</StyledTable>;
+  return <Table>{tokenList}</Table>;
 };
 
 export default TokenList;

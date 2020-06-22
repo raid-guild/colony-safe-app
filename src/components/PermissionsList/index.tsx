@@ -1,20 +1,17 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { Table, TableRow, TableCell, Tooltip } from "@material-ui/core";
+import { TableRow, TableCell, Tooltip } from "@material-ui/core";
+
 import styled from "styled-components";
 
 import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
+import Table from "../common/StyledTable";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
 import { useColonyRoles, useHasDomainPermission } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
-
-const StyledTable = styled(Table)`
-  min-width: 480px;
-  box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
-`;
 
 const UnderlinedTableRow = styled(TableRow)`
   border-bottom-width: 3px;
@@ -102,7 +99,7 @@ const PermissionsList = () => {
   );
 
   return (
-    <StyledTable>
+    <Table>
       {hasRootPermission && <AddAddressRow />}
       {addressList.length > 0 ? (
         addressList
@@ -113,7 +110,7 @@ const PermissionsList = () => {
           </TableCell>
         </TableRow>
       )}
-    </StyledTable>
+    </Table>
   );
 };
 
