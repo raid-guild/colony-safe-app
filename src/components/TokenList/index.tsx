@@ -1,9 +1,9 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Table, TableRow, TableCell } from "@material-ui/core";
 import styled from "styled-components";
-import { ColonyRole, ColonyClient } from "@colony/colony-js";
+import { ColonyRole } from "@colony/colony-js";
 import TokenModal from "../Modals/TokenModal";
-import { useColonyClient } from "../../contexts/ColonyContext";
+import { useHasDomainPermission } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token } from "../../typings";
 
@@ -25,36 +25,14 @@ const TokenRow = ({ token, hasFundingRole }: { token: Token; hasFundingRole: boo
   );
 };
 
-const hasRoleOrRoot = async (
-  colonyClient: ColonyClient,
-  userAddress: string,
-  domainId: number,
-  role: ColonyRole,
-): Promise<boolean> => {
-  const hasRoot = await colonyClient.hasUserRole(userAddress, domainId, ColonyRole.Root);
-  const hasFunding = await colonyClient.hasUserRole(userAddress, domainId, role);
-  return hasRoot || hasFunding;
-};
-
 const TokenList = ({ tokens }: { tokens: Token[] }) => {
   const safeInfo = useSafeInfo();
-  const colonyClient = useColonyClient();
-  const [hasFundingRole, setHasFundingRole] = useState<boolean>(false);
+  const hasFundingPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Funding);
 
-  useEffect(() => {
-    if (colonyClient && safeInfo?.safeAddress) {
-      hasRoleOrRoot(colonyClient, safeInfo?.safeAddress, 1, ColonyRole.Funding).then(roleStatus =>
-        setHasFundingRole(roleStatus),
-      );
-    } else {
-      setHasFundingRole(false);
-    }
-  }, [colonyClient, safeInfo]);
-
-  const tokenList = useMemo(() => tokens.map(token => <TokenRow token={token} hasFundingRole={hasFundingRole} />), [
-    tokens,
-    hasFundingRole,
-  ]);
+  const tokenList = useMemo(
+    () => tokens.map(token => <TokenRow token={token} hasFundingRole={hasFundingPermission} />),
+    [tokens, hasFundingPermission],
+  );
 
   return <StyledTable>{tokenList}</StyledTable>;
 };

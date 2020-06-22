@@ -7,6 +7,7 @@ import {
   NetworkClient,
   ColonyRoles,
   getColonyRoles,
+  ColonyRole,
 } from "@colony/colony-js";
 import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
@@ -178,6 +179,32 @@ export const useColonyRoles = (): ColonyRoles => {
   }, [colonyClient]);
 
   return roles;
+};
+
+export const useHasDomainPermission = (
+  userAddress: string | undefined,
+  domainId: number,
+  role: ColonyRole,
+): boolean => {
+  const colonyClient = useColonyClient();
+  const [hasPermission, setHasPermission] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userAddress && colonyClient) {
+      Promise.all([
+        // Check if user has selected role (or root)
+        colonyClient.hasUserRole(userAddress, domainId, ColonyRole.Root),
+        colonyClient.hasUserRole(userAddress, domainId, role),
+        // The user could also inherit this permission from the root domain
+        colonyClient.hasUserRole(userAddress, 1, ColonyRole.Root),
+        colonyClient.hasUserRole(userAddress, 1, role),
+      ]).then(roleStatuses => setHasPermission(roleStatuses.includes(true)));
+    } else {
+      setHasPermission(false);
+    }
+  }, [colonyClient, userAddress, domainId, role]);
+
+  return hasPermission;
 };
 
 export default ColonyProvider;
