@@ -24,28 +24,28 @@ const UnderlinedTableRow = styled(TableRow)`
 const AddressRow = ({
   address,
   permissions,
-  hasAdminPermission,
+  hasRootPermission,
 }: {
   address: string;
   permissions: DomainRoles;
-  hasAdminPermission: boolean;
+  hasRootPermission: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showToolTip, setShowToolTip] = useState<boolean>(false);
 
   const handleClick = useCallback(() => {
-    if (hasAdminPermission) {
+    if (hasRootPermission) {
       setIsOpen(true);
     } else {
       setShowToolTip(true);
       setTimeout(() => setShowToolTip(false), 1500);
     }
-  }, [hasAdminPermission]);
+  }, [hasRootPermission]);
 
   return (
     <>
       <PermissionsModal
-        isOpen={hasAdminPermission && isOpen}
+        isOpen={hasRootPermission && isOpen}
         setIsOpen={setIsOpen}
         address={address}
         permissions={permissions.roles}
@@ -90,20 +90,20 @@ const AddAddressRow = () => {
 
 const PermissionsList = () => {
   const safeInfo = useSafeInfo();
-  const hasAdminPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Administration);
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
   const roles: ColonyRoles = useColonyRoles();
 
   const addressList = useMemo(
     () =>
       roles.map(({ address, domains }) => (
-        <AddressRow address={address} permissions={domains[0]} hasAdminPermission={hasAdminPermission} />
+        <AddressRow address={address} permissions={domains[0]} hasRootPermission={hasRootPermission} />
       )),
-    [roles, hasAdminPermission],
+    [roles, hasRootPermission],
   );
 
   return (
     <StyledTable>
-      {hasAdminPermission && <AddAddressRow />}
+      {hasRootPermission && <AddAddressRow />}
       {addressList.length > 0 ? (
         addressList
       ) : (
