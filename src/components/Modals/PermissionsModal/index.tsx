@@ -9,14 +9,7 @@ import RootIcon from "../../../assets/permissions/root.svg";
 
 import ManageListModal from "./Modal";
 import { shortenAddress } from "../../../utils";
-
-type Permission = {
-  id: string;
-  iconUrl: any;
-  name: string;
-  description: string;
-  checked: boolean;
-};
+import { Permission } from "./types";
 
 const setInitialPermissions = (permissions: number[]): Permission[] => [
   {
@@ -71,7 +64,7 @@ const PermissionsModal = ({
 }: {
   isOpen: boolean;
   setIsOpen: Function;
-  address: string;
+  address?: string;
   permissions: number[];
 }) => {
   const [items, setItems] = useState(setInitialPermissions(permissions));
@@ -89,12 +82,12 @@ const PermissionsModal = ({
   if (!isOpen) return null;
   return (
     <ManageListModal
-      title={shortenAddress(address)}
+      title={address ? shortenAddress(address) : "New Account"}
       defaultIconUrl=""
-      itemList={items}
+      permissionsList={items}
       onSubmitForm={() => console.log("submitted")}
       onClose={() => setIsOpen(false)}
-      onItemToggle={onItemToggle}
+      onPermissionToggle={onItemToggle}
     />
   );
 };

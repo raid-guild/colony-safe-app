@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import { GenericModal, Text, Switch, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
+import { Permission } from "./types";
 
 const BodyHeader = styled.div`
   display: flex;
@@ -45,59 +46,72 @@ const TextDesc = styled(Text)`
 type Props = {
   title?: string;
   defaultIconUrl: string;
-  itemList: Array<{
-    id: number | string;
-    iconUrl: string;
-    name: string;
-    description?: string;
-    checked: boolean;
-  }>;
+  permissionsList: Permission[];
   isSubmitFormDisabled?: boolean;
   onSubmitForm: () => any;
-  onItemToggle: (itemId: number | string, checked: boolean) => any;
+  onPermissionToggle: (itemId: number | string, checked: boolean) => any;
   onClose: () => any;
 };
 
-const ManageList = ({
-  title = "Set Permissions",
-  itemList,
+const PermissionsToggleList = ({
+  permissions,
+  onPermissionToggle,
   defaultIconUrl,
-  isSubmitFormDisabled = false,
-  onSubmitForm,
-  onItemToggle,
-  onClose,
-}: Props) => {
+}: {
+  permissions: Permission[];
+  onPermissionToggle: (itemId: number | string, checked: boolean) => any;
+  defaultIconUrl: string;
+}) => {
   const setDefaultImage = (e: any) => {
     e.target.onerror = null;
     e.target.src = defaultIconUrl;
   };
+  return (
+    <>
+      {permissions.map(i => {
+        const onChange = (checked: boolean) => onPermissionToggle(i.id, checked);
 
+        return (
+          <StyledItem key={i.id}>
+            <StyledImageName>
+              <StyledImage alt={i.name} onError={setDefaultImage} src={i.iconUrl} />
+              <div>
+                <div>
+                  <Text size="lg" strong>
+                    {i.name}
+                  </Text>
+                </div>
+                <div>
+                  <TextDesc size="md">{i.description && i.description}</TextDesc>
+                </div>
+              </div>
+            </StyledImageName>
+            <Switch checked={i.checked} onChange={onChange} />
+          </StyledItem>
+        );
+      })}
+    </>
+  );
+};
+
+const ManageList = ({
+  title = "Set Permissions",
+  permissionsList,
+  defaultIconUrl,
+  isSubmitFormDisabled = false,
+  onSubmitForm,
+  onPermissionToggle,
+  onClose,
+}: Props) => {
   const getBody = () => (
     <>
       <BodyHeader>placeholder</BodyHeader>
       <div>
-        {itemList.map(i => {
-          const onChange = (checked: boolean) => onItemToggle(i.id, checked);
-
-          return (
-            <StyledItem key={i.id}>
-              <StyledImageName>
-                <StyledImage alt={i.name} onError={setDefaultImage} src={i.iconUrl} />
-                <div>
-                  <div>
-                    <Text size="lg" strong>
-                      {i.name}
-                    </Text>
-                  </div>
-                  <div>
-                    <TextDesc size="md">{i.description && i.description}</TextDesc>
-                  </div>
-                </div>
-              </StyledImageName>
-              <Switch checked={i.checked} onChange={onChange} />
-            </StyledItem>
-          );
-        })}
+        <PermissionsToggleList
+          permissions={permissionsList}
+          onPermissionToggle={onPermissionToggle}
+          defaultIconUrl={defaultIconUrl}
+        />
       </div>
     </>
   );

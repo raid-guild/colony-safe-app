@@ -41,6 +41,7 @@ const AddAddressRow = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
+      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address="" permissions={[]} />
       <UnderlinedTableRow onClick={() => setIsOpen(true)}>
         <TableCell>
           <Text size="lg">Add Account</Text>
