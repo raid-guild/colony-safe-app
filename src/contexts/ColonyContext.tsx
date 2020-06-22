@@ -1,6 +1,13 @@
 import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect } from "react";
 
-import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
+import {
+  getColonyNetworkClient,
+  Network,
+  ColonyClient,
+  NetworkClient,
+  ColonyRoles,
+  getColonyRoles,
+} from "@colony/colony-js";
 import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
@@ -156,6 +163,21 @@ export const useTokensInfo = () => {
   }, [colonyClient, tokens]);
 
   return tokensInfo;
+};
+
+export const useColonyRoles = (): ColonyRoles => {
+  const colonyClient = useColonyClient();
+  const [roles, setRoles] = useState<ColonyRoles>([]);
+
+  useEffect(() => {
+    if (colonyClient) {
+      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setRoles(newRoles));
+    } else {
+      setRoles([]);
+    }
+  }, [colonyClient]);
+
+  return roles;
 };
 
 export default ColonyProvider;

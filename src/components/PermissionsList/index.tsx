@@ -1,13 +1,13 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Table, TableRow, TableCell } from "@material-ui/core";
 import styled from "styled-components";
 
-import { ColonyRoles, DomainRoles, getColonyRoles } from "@colony/colony-js";
+import { ColonyRoles, DomainRoles } from "@colony/colony-js";
 
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
-import { useColonyClient } from "../../contexts/ColonyContext";
+import { useColonyRoles } from "../../contexts/ColonyContext";
 
 const StyledTable = styled(Table)`
   min-width: 480px;
@@ -32,16 +32,7 @@ const AddressRow = ({ address, permissions }: { address: string; permissions: Do
 };
 
 const PermissionsList = () => {
-  const colonyClient = useColonyClient();
-  const [roles, setRoles] = useState<ColonyRoles>([]);
-
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setRoles(newRoles));
-    } else {
-      setRoles([]);
-    }
-  }, [colonyClient]);
+  const roles: ColonyRoles = useColonyRoles();
 
   const addressList = useMemo(
     () => roles.map(({ address, domains }) => <AddressRow address={address} permissions={domains[0]} />),
