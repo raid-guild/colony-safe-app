@@ -33,9 +33,9 @@ const TabContentsWrapper = styled.div`
 const LeftWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  align-items: flex-start;
-
-  min-width: 140px;
+  align-items: flex-end;
+  margin-right: 16px
+  width: 140px;
 `;
 
 function TabPanel(props: any) {
