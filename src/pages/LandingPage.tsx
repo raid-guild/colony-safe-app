@@ -40,7 +40,7 @@ const ColonyENSInput = () => {
           setColony(`${ensName}.colony.joincolony.eth`);
         }}
       >
-        click me
+        Confirm
       </Button>
     </ColonyNameInputWrapper>
   );
