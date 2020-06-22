@@ -18,6 +18,16 @@ const LandingPageWrapper = styled.div`
 const LandingPage = () => {
   const setColony = useSetColony();
   const [clicked, setClicked] = useState<boolean>(false);
+
+  // If we have a predefined colony then there is no need to display other elements
+  if (process.env.REACT_APP_COLONY_ENS_NAME) {
+    return (
+      <LandingPageWrapper>
+        <CircularProgress />
+      </LandingPageWrapper>
+    );
+  }
+
   return (
     <LandingPageWrapper>
       <Title size="md">A platform for community collaboration.</Title>

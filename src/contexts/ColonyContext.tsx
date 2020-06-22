@@ -61,6 +61,10 @@ function ColonyProvider({ children }: Props) {
     [networkClient],
   );
 
+  useEffect(() => {
+    if (process.env.REACT_APP_COLONY_ENS_NAME) setColony(process.env.REACT_APP_COLONY_ENS_NAME);
+  }, [setColony]);
+
   return <ColonyContext.Provider value={{ colonyClient, setColony }}>{children}</ColonyContext.Provider>;
 }
 
