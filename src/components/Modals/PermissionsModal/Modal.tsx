@@ -51,6 +51,7 @@ type Props = {
   onSubmitForm: () => any;
   onPermissionToggle: (itemId: number | string, checked: boolean) => any;
   onClose: () => any;
+  newAccount?: boolean;
 };
 
 const PermissionsToggleList = ({
@@ -99,13 +100,18 @@ const ManageList = ({
   permissionsList,
   defaultIconUrl,
   isSubmitFormDisabled = false,
+  newAccount,
   onSubmitForm,
   onPermissionToggle,
   onClose,
 }: Props) => {
   const getBody = () => (
     <>
-      <BodyHeader>placeholder</BodyHeader>
+      {newAccount && (
+        <BodyHeader>
+          <Text size="md"> Adding New Account</Text>
+        </BodyHeader>
+      )}
       <div>
         <PermissionsToggleList
           permissions={permissionsList}

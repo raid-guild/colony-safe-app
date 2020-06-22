@@ -88,6 +88,7 @@ const PermissionsModal = ({
       onSubmitForm={() => console.log("submitted")}
       onClose={() => setIsOpen(false)}
       onPermissionToggle={onItemToggle}
+      newAccount={!address}
     />
   );
 };
