@@ -1,11 +1,20 @@
-import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect } from "react";
+import React, { useState, createContext, ReactElement, useContext, useCallback, useEffect, useMemo } from "react";
 
-import { getColonyNetworkClient, Network, ColonyClient, NetworkClient } from "@colony/colony-js";
+import {
+  getColonyNetworkClient,
+  Network,
+  ColonyClient,
+  NetworkClient,
+  ColonyRoles,
+  getColonyRoles,
+  ColonyRole,
+} from "@colony/colony-js";
 import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
 import getColonyTokens from "../utils/colony/getColonyTokens";
 import { Token } from "../typings";
+import userHasDomainRole from "../utils/colony/userHasDomainRole";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -14,6 +23,7 @@ interface Props {
 interface State {
   setColony: Function;
   colonyClient?: ColonyClient;
+  colonyRoles: ColonyRoles;
 }
 
 export const ColonyContext = createContext({} as State);
@@ -26,6 +36,7 @@ function ColonyProvider({ children }: Props) {
   /** State Variables **/
   const [colonyClient, setColonyClient] = useState<ColonyClient>();
   const [networkClient, setNetworkClient] = useState<NetworkClient>();
+  const [colonyRoles, setColonyRoles] = useState<ColonyRoles>([]);
 
   const network = "mainnet";
   useEffect(() => {
@@ -65,7 +76,15 @@ function ColonyProvider({ children }: Props) {
     if (process.env.REACT_APP_COLONY_ENS_NAME) setColony(process.env.REACT_APP_COLONY_ENS_NAME);
   }, [setColony]);
 
-  return <ColonyContext.Provider value={{ colonyClient, setColony }}>{children}</ColonyContext.Provider>;
+  useEffect(() => {
+    if (colonyClient) {
+      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setColonyRoles(newRoles));
+    } else {
+      setColonyRoles([]);
+    }
+  }, [colonyClient]);
+
+  return <ColonyContext.Provider value={{ colonyClient, colonyRoles, setColony }}>{children}</ColonyContext.Provider>;
 }
 
 export const useColonyClient = (): ColonyClient | undefined => {
@@ -76,6 +95,32 @@ export const useColonyClient = (): ColonyClient | undefined => {
 export const useSetColony = (): Function => {
   const { setColony } = useColonyContext();
   return setColony;
+};
+
+export const useColonyRoles = (): ColonyRoles => {
+  const { colonyRoles } = useColonyContext();
+
+  return colonyRoles;
+};
+
+export const useHasDomainPermission = (
+  userAddress: string | undefined,
+  domainId: number,
+  role: ColonyRole,
+): boolean => {
+  const colonyRoles = useColonyRoles();
+
+  const hasPermission = useMemo(() => {
+    // Check if user has selected role (or root)
+    const rootOnDomain = userHasDomainRole(colonyRoles, userAddress, domainId, ColonyRole.Root);
+    const roleOnDomain = userHasDomainRole(colonyRoles, userAddress, domainId, role);
+    // The user could also inherit this role from the root domain
+    const rootOnRoot = userHasDomainRole(colonyRoles, userAddress, 1, ColonyRole.Root);
+    const roleOnRoot = userHasDomainRole(colonyRoles, userAddress, 1, role);
+    return rootOnDomain || roleOnDomain || rootOnRoot || roleOnRoot;
+  }, [colonyRoles, userAddress, domainId, role]);
+
+  return hasPermission;
 };
 
 export const useColonyVersion = (): BigNumber => {

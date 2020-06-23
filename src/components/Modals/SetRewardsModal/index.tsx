@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { Button, GenericModal, TextField, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
 
-const SetRewardsModal = () => {
+const SetRewardsModal = ({ disabled }: { disabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [rewardsPercentage, setRewardsPercentage] = useState<string>("");
 
@@ -26,7 +26,7 @@ const SetRewardsModal = () => {
   );
   return (
     <>
-      <Button size="md" color="primary" onClick={() => setIsOpen(!isOpen)}>
+      <Button size="md" color="primary" onClick={() => setIsOpen(!isOpen)} disabled={disabled}>
         Set Rewards %
       </Button>
       {isOpen && (

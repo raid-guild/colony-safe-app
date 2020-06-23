@@ -1,22 +1,35 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { Table, TableRow, TableCell } from "@material-ui/core";
-import styled from "styled-components";
-import { ColonyRole, ColonyClient } from "@colony/colony-js";
+import React, { useMemo, useState } from "react";
+import { TableRow, TableCell } from "@material-ui/core";
+import { ColonyRole } from "@colony/colony-js";
+import Table from "../common/StyledTable";
+
 import TokenModal from "../Modals/TokenModal";
-import { useColonyClient } from "../../contexts/ColonyContext";
+import { useHasDomainPermission } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token } from "../../typings";
 
-const StyledTable = styled(Table)`
-  min-width: 480px;
-  box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
-`;
-
-const TokenRow = ({ token, hasFundingRole }: { token: Token; hasFundingRole: boolean }) => {
+const TokenRow = ({
+  token,
+  hasRootRole,
+  hasAdministrationRole,
+  hasFundingRole,
+}: {
+  token: Token;
+  hasRootRole: boolean;
+  hasAdministrationRole: boolean;
+  hasFundingRole: boolean;
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <TokenModal isOpen={isOpen} setIsOpen={setIsOpen} token={token} hasFundingRole={hasFundingRole} />
+      <TokenModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        token={token}
+        hasRootRole={hasRootRole}
+        hasAdministrationRole={hasAdministrationRole}
+        hasFundingRole={hasFundingRole}
+      />
       <TableRow onClick={() => setIsOpen(true)}>
         <TableCell>{token.symbol}</TableCell>
         <TableCell align="right">0.000</TableCell>
@@ -25,38 +38,26 @@ const TokenRow = ({ token, hasFundingRole }: { token: Token; hasFundingRole: boo
   );
 };
 
-const hasRoleOrRoot = async (
-  colonyClient: ColonyClient,
-  userAddress: string,
-  domainId: number,
-  role: ColonyRole,
-): Promise<boolean> => {
-  const hasRoot = await colonyClient.hasUserRole(userAddress, domainId, ColonyRole.Root);
-  const hasFunding = await colonyClient.hasUserRole(userAddress, domainId, role);
-  return hasRoot || hasFunding;
-};
-
 const TokenList = ({ tokens }: { tokens: Token[] }) => {
   const safeInfo = useSafeInfo();
-  const colonyClient = useColonyClient();
-  const [hasFundingRole, setHasFundingRole] = useState<boolean>(false);
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
+  const hasAdministrationPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Administration);
+  const hasFundingPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Funding);
 
-  useEffect(() => {
-    if (colonyClient && safeInfo?.safeAddress) {
-      hasRoleOrRoot(colonyClient, safeInfo?.safeAddress, 1, ColonyRole.Funding).then(roleStatus =>
-        setHasFundingRole(roleStatus),
-      );
-    } else {
-      setHasFundingRole(false);
-    }
-  }, [colonyClient, safeInfo]);
+  const tokenList = useMemo(
+    () =>
+      tokens.map(token => (
+        <TokenRow
+          token={token}
+          hasRootRole={hasRootPermission}
+          hasAdministrationRole={hasAdministrationPermission}
+          hasFundingRole={hasFundingPermission}
+        />
+      )),
+    [tokens, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
+  );
 
-  const tokenList = useMemo(() => tokens.map(token => <TokenRow token={token} hasFundingRole={hasFundingRole} />), [
-    tokens,
-    hasFundingRole,
-  ]);
-
-  return <StyledTable>{tokenList}</StyledTable>;
+  return <Table>{tokenList}</Table>;
 };
 
 export default TokenList;

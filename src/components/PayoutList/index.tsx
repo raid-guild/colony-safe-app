@@ -1,13 +1,8 @@
 import React, { useMemo, useState } from "react";
-import { Table, TableRow, TableCell } from "@material-ui/core";
-import styled from "styled-components";
+import { TableRow, TableCell } from "@material-ui/core";
+import Table from "../common/StyledTable";
 import PayoutModal from "../Modals/PayoutModal";
 import { Token } from "../../typings";
-
-const StyledTable = styled(Table)`
-  min-width: 480px;
-  box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
-`;
 
 const TokenRow = ({ token }: { token: Token }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -25,7 +20,7 @@ const TokenRow = ({ token }: { token: Token }) => {
 const PayoutList = ({ tokens }: { tokens: Token[] }) => {
   const tokenList = useMemo(() => tokens.map(token => <TokenRow token={token} />), [tokens]);
 
-  return <StyledTable>{tokenList}</StyledTable>;
+  return <Table>{tokenList}</Table>;
 };
 
 export default PayoutList;

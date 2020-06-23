@@ -5,7 +5,7 @@ import styled from "styled-components";
 
 import { useTokensInfo } from "../contexts/ColonyContext";
 
-import SetRewardsModal from "../components/Modals/SetRewardsModal.tsx";
+import PayoutSidebar from "../components/PayoutList/Sidebar";
 import DomainTree from "../components/ColonyTree/DomainTree";
 import ColonyTree from "../components/ColonyTree";
 import TokenList from "../components/TokenList";
@@ -33,9 +33,9 @@ const TabContentsWrapper = styled.div`
 const LeftWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  align-items: flex-start;
-
-  min-width: 140px;
+  align-items: flex-end;
+  margin-right: 16px
+  width: 140px;
 `;
 
 function TabPanel(props: any) {
@@ -83,7 +83,7 @@ const ColonyPage = () => {
         </TabPanel>
         <TabPanel value={currentTab} index={TabsLabels.Rewards}>
           <LeftWrapper>
-            <SetRewardsModal />
+            <PayoutSidebar />
           </LeftWrapper>
           <PayoutList tokens={tokens} />
         </TabPanel>

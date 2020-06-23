@@ -1,55 +1,106 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { Table, TableRow, TableCell } from "@material-ui/core";
+import React, { useMemo, useState, useCallback } from "react";
+import { TableRow, TableCell, Tooltip } from "@material-ui/core";
+
 import styled from "styled-components";
 
-import { ColonyRoles, DomainRoles, getColonyRoles } from "@colony/colony-js";
+import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
+import { Text, Icon } from "@gnosis.pm/safe-react-components";
+import Table from "../common/StyledTable";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
-import { useColonyClient } from "../../contexts/ColonyContext";
+import { useColonyRoles, useHasDomainPermission } from "../../contexts/ColonyContext";
+import { useSafeInfo } from "../../contexts/SafeContext";
 
-const StyledTable = styled(Table)`
-  min-width: 480px;
-  box-shadow: 1px 2px 10px 0 rgba(212, 212, 211, 0.59);
+const UnderlinedTableRow = styled(TableRow)`
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
 `;
 
-const AddressRow = ({ address, permissions }: { address: string; permissions: DomainRoles }) => {
+const AddressRow = ({
+  address,
+  permissions,
+  hasRootPermission,
+}: {
+  address: string;
+  permissions: DomainRoles;
+  hasRootPermission: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showToolTip, setShowToolTip] = useState<boolean>(false);
+
+  const handleClick = useCallback(() => {
+    if (hasRootPermission) {
+      setIsOpen(true);
+    } else {
+      setShowToolTip(true);
+      setTimeout(() => setShowToolTip(false), 1500);
+    }
+  }, [hasRootPermission]);
+
+  return (
+    <>
+      <PermissionsModal
+        isOpen={hasRootPermission && isOpen}
+        setIsOpen={setIsOpen}
+        address={address}
+        permissions={permissions.roles}
+      />
+      <Tooltip
+        open={showToolTip}
+        placement="top"
+        title="You don't have the permissions to change this"
+        disableFocusListener
+        disableHoverListener
+        disableTouchListener
+      >
+        <TableRow onClick={handleClick}>
+          <TableCell>
+            <Address address={address} />
+          </TableCell>
+          <TableCell align="right">
+            <PermissionIcons permissions={permissions} />
+          </TableCell>
+        </TableRow>
+      </Tooltip>
+    </>
+  );
+};
+
+const AddAddressRow = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address={address} permissions={permissions.roles} />
-      <TableRow onClick={() => setIsOpen(true)}>
+      <PermissionsModal isOpen={isOpen} setIsOpen={setIsOpen} address="" permissions={[]} />
+      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
         <TableCell>
-          <Address address={address} />
+          <Text size="lg">Add Account</Text>
         </TableCell>
         <TableCell align="right">
-          <PermissionIcons permissions={permissions} />
+          <Icon type="add" size="md" />
         </TableCell>
-      </TableRow>
+      </UnderlinedTableRow>
     </>
   );
 };
 
 const PermissionsList = () => {
-  const colonyClient = useColonyClient();
-  const [roles, setRoles] = useState<ColonyRoles>([]);
-
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setRoles(newRoles));
-    } else {
-      setRoles([]);
-    }
-  }, [colonyClient]);
+  const safeInfo = useSafeInfo();
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
+  const roles: ColonyRoles = useColonyRoles();
 
   const addressList = useMemo(
-    () => roles.map(({ address, domains }) => <AddressRow address={address} permissions={domains[0]} />),
-    [roles],
+    () =>
+      roles.map(({ address, domains }) => (
+        <AddressRow address={address} permissions={domains[0]} hasRootPermission={hasRootPermission} />
+      )),
+    [roles, hasRootPermission],
   );
 
   return (
-    <StyledTable>
+    <Table>
+      {hasRootPermission && <AddAddressRow />}
       {addressList.length > 0 ? (
         addressList
       ) : (
@@ -59,7 +110,7 @@ const PermissionsList = () => {
           </TableCell>
         </TableRow>
       )}
-    </StyledTable>
+    </Table>
   );
 };
 
