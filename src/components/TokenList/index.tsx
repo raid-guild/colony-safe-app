@@ -1,9 +1,12 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { TableRow, TableCell } from "@material-ui/core";
+
 import { ColonyRole, ColonyClient } from "@colony/colony-js";
 import { formatUnits, BigNumber } from "ethers/utils";
-import Table from "../common/StyledTable";
+import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
+import Table from "../common/StyledTable";
+import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import TokenModal from "../Modals/TokenModal";
 import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
@@ -82,6 +85,22 @@ const TokenRow = ({
   );
 };
 
+const MintTokensRow = () => {
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
+  return (
+    <>
+      <UnderlinedTableRow onClick={() => console.log("Opening Mint Tokens modal")}>
+        <TableCell>
+          <Text size="lg">Mint Tokens</Text>
+        </TableCell>
+        <TableCell align="right">
+          <Icon type="add" size="md" />
+        </TableCell>
+      </UnderlinedTableRow>
+    </>
+  );
+};
+
 const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomainId: number }) => {
   const safeInfo = useSafeInfo();
   const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Root);
@@ -106,7 +125,12 @@ const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomain
     [tokens, currentDomainId, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
   );
 
-  return <Table>{tokenList}</Table>;
+  return (
+    <Table>
+      {hasRootPermission && <MintTokensRow />}
+      {tokenList}
+    </Table>
+  );
 };
 
 export default TokenList;
