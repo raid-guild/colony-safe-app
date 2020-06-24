@@ -13,8 +13,9 @@ import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenCl
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
 import getColonyTokens from "../utils/colony/getColonyTokens";
-import { Token } from "../typings";
+import { Token, Domain } from "../typings";
 import userHasDomainRole from "../utils/colony/userHasDomainRole";
+import getColonyDomains from "../utils/colony/getColonyDomains";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -23,6 +24,7 @@ interface Props {
 interface State {
   setColony: Function;
   colonyClient?: ColonyClient;
+  colonyDomains: Domain[];
   colonyRoles: ColonyRoles;
 }
 
@@ -36,6 +38,7 @@ function ColonyProvider({ children }: Props) {
   /** State Variables **/
   const [colonyClient, setColonyClient] = useState<ColonyClient>();
   const [networkClient, setNetworkClient] = useState<NetworkClient>();
+  const [colonyDomains, setColonyDomains] = useState<Domain[]>([]);
   const [colonyRoles, setColonyRoles] = useState<ColonyRoles>([]);
 
   const network = "mainnet";
@@ -78,13 +81,25 @@ function ColonyProvider({ children }: Props) {
 
   useEffect(() => {
     if (colonyClient) {
+      getColonyDomains(colonyClient).then((newDomains: Domain[]) => setColonyDomains(newDomains));
+    } else {
+      setColonyDomains([]);
+    }
+  }, [colonyClient]);
+
+  useEffect(() => {
+    if (colonyClient) {
       getColonyRoles(colonyClient).then((newRoles: ColonyRoles) => setColonyRoles(newRoles));
     } else {
       setColonyRoles([]);
     }
   }, [colonyClient]);
 
-  return <ColonyContext.Provider value={{ colonyClient, colonyRoles, setColony }}>{children}</ColonyContext.Provider>;
+  return (
+    <ColonyContext.Provider value={{ colonyClient, colonyDomains, colonyRoles, setColony }}>
+      {children}
+    </ColonyContext.Provider>
+  );
 }
 
 export const useColonyClient = (): ColonyClient | undefined => {
@@ -99,7 +114,6 @@ export const useSetColony = (): Function => {
 
 export const useColonyRoles = (): ColonyRoles => {
   const { colonyRoles } = useColonyContext();
-
   return colonyRoles;
 };
 
@@ -121,6 +135,12 @@ export const useHasDomainPermission = (
   }, [colonyRoles, userAddress, domainId, role]);
 
   return hasPermission;
+};
+
+export const useColonyDomains = (): Domain[] => {
+  const { colonyDomains } = useColonyContext();
+
+  return colonyDomains;
 };
 
 export const useColonyVersion = (): BigNumber => {

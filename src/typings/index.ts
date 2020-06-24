@@ -13,4 +13,11 @@ export type Transaction = {
   value: BigNumberish;
 };
 
-export type Domain = { skillId: BigNumber; fundingPotId: BigNumber; 0: BigNumber; 1: BigNumber };
+export type Domain = {
+  skillId: BigNumber;
+  fundingPotId: BigNumber;
+  domainId: BigNumber;
+  0: BigNumber;
+  1: BigNumber;
+  2: BigNumber;
+};

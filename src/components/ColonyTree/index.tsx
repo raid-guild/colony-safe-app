@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import { ColonyClient } from "@colony/colony-js";
 import StyledTreeItem from "./StyledTreeItem";
-import getColonyDomains from "../../utils/colony/getColonyDomains";
-import { Domain } from "../../typings";
-import { useColonyClient } from "../../contexts/ColonyContext";
 import DomainTreeItems from "./DomainTreeItems";
+import { useColonyDomains } from "../../contexts/ColonyContext";
+import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
 
 const useStyles = makeStyles({
   root: {
@@ -18,30 +16,41 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ColonyTree() {
-  const colonyClient: ColonyClient | undefined = useColonyClient();
-  const [domains, setDomains] = useState<Domain[]>([]);
+export default function ColonyTree({
+  currentDomainId,
+  setCurrentDomainId,
+}: {
+  currentDomainId: number;
+  setCurrentDomainId: Function;
+}) {
+  const domains = useColonyDomains();
   const classes = useStyles();
 
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyDomains(colonyClient).then((newDomains: Domain[]) => setDomains(newDomains));
-    } else {
-      setDomains([]);
-    }
-  }, [colonyClient]);
+  const [expanded, setExpanded] = useState<string[]>([]);
 
+  const handleToggle = (_event: any, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
+
+  const handleSelect = (_event: any, nodeIds: string[]) => {
+    console.log(nodeIds);
+    setCurrentDomainId(parseInt(nodeIds.toString(), 10));
+  };
   return (
     <TreeView
       className={classes.root}
-      defaultExpanded={["3"]}
+      defaultExpanded={["0"]}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<div style={{ width: 24 }} />}
+      expanded={expanded}
+      selected={[currentDomainId.toString()]}
+      onNodeToggle={handleToggle}
+      onNodeSelect={handleSelect}
     >
-      <StyledTreeItem nodeId="1" labelText="Entire Colony" />
-      <StyledTreeItem nodeId="2" labelText="Rewards Pot" />
-      <DomainTreeItems domains={domains} startNoteId={3} />
+      <StyledTreeItem nodeId={ALL_DOMAINS_ID.toString()} labelText="Entire Colony" />
+      <StyledTreeItem nodeId={REWARDS_FUNDING_POT_ID.toString()} labelText="Rewards Pot" />
+      <DomainTreeItems domains={domains} />
     </TreeView>
   );
 }

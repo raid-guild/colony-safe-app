@@ -3,7 +3,7 @@ import React from "react";
 import StyledTreeItem from "./StyledTreeItem";
 import { Domain } from "../../typings";
 
-const DomainTreeItems = ({ domains, startNoteId = 0 }: { domains: Domain[]; startNoteId?: number }) => {
+const DomainTreeItems = ({ domains, startNoteId = 1 }: { domains: Domain[]; startNoteId?: number }) => {
   if (domains.length === 0) return null;
   if (domains.length === 1) return <StyledTreeItem nodeId={startNoteId.toString()} labelText="Root Domain" />;
 

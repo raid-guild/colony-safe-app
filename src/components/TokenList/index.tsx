@@ -1,25 +1,48 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { TableRow, TableCell } from "@material-ui/core";
 import { ColonyRole } from "@colony/colony-js";
+import { formatUnits } from "ethers/utils";
 import Table from "../common/StyledTable";
 
 import TokenModal from "../Modals/TokenModal";
-import { useHasDomainPermission } from "../../contexts/ColonyContext";
+import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
-import { Token } from "../../typings";
+import { Token, Domain } from "../../typings";
+import { ALL_DOMAINS_ID } from "../../constants";
 
 const TokenRow = ({
   token,
+  domainId,
   hasRootRole,
   hasAdministrationRole,
   hasFundingRole,
 }: {
   token: Token;
+  domainId: number;
   hasRootRole: boolean;
   hasAdministrationRole: boolean;
   hasFundingRole: boolean;
 }) => {
+  const colonyClient = useColonyClient();
+  const colonyDomains = useColonyDomains();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [balance, setBalance] = useState<string>("0");
+
+  useEffect(() => {
+    if (colonyClient) {
+      if (domainId === ALL_DOMAINS_ID) {
+        colonyClient.getNonRewardPotsTotal(token.address).then(tokenBalance => setBalance(tokenBalance.toString()));
+      } else {
+        const domainInfo = colonyDomains.find((domain: Domain) => domainId === domain.domainId.toNumber());
+        if (domainInfo) {
+          colonyClient
+            .getFundingPotBalance(domainInfo.fundingPotId, token.address)
+            .then(tokenBalance => setBalance(tokenBalance.toString()));
+        }
+      }
+    }
+  }, [colonyClient, colonyDomains, domainId, token.address]);
+
   return (
     <>
       <TokenModal
@@ -32,29 +55,34 @@ const TokenRow = ({
       />
       <TableRow onClick={() => setIsOpen(true)}>
         <TableCell>{token.symbol}</TableCell>
-        <TableCell align="right">0.000</TableCell>
+        <TableCell align="right">{formatUnits(balance, token.decimals)}</TableCell>
       </TableRow>
     </>
   );
 };
 
-const TokenList = ({ tokens }: { tokens: Token[] }) => {
+const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomainId: number }) => {
   const safeInfo = useSafeInfo();
-  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
-  const hasAdministrationPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Administration);
-  const hasFundingPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Funding);
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Root);
+  const hasAdministrationPermission = useHasDomainPermission(
+    safeInfo?.safeAddress,
+    currentDomainId,
+    ColonyRole.Administration,
+  );
+  const hasFundingPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Funding);
 
   const tokenList = useMemo(
     () =>
       tokens.map(token => (
         <TokenRow
           token={token}
+          domainId={currentDomainId}
           hasRootRole={hasRootPermission}
           hasAdministrationRole={hasAdministrationPermission}
           hasFundingRole={hasFundingPermission}
         />
       )),
-    [tokens, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
+    [tokens, currentDomainId, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
   );
 
   return <Table>{tokenList}</Table>;
