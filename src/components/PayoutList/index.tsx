@@ -5,11 +5,16 @@ import { TableRow, TableCell } from "@material-ui/core";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
 
+import { ColonyRole } from "@colony/colony-js";
 import Table from "../common/StyledTable";
 import PayoutModal from "../Modals/PayoutModal";
-import { Token } from "../../typings";
-import { useColonyClient } from "../../contexts/ColonyContext";
+
+import { useSafeInfo } from "../../contexts/SafeContext";
+import { useColonyClient, useHasDomainPermission } from "../../contexts/ColonyContext";
+
 import { REWARDS_FUNDING_POT_ID } from "../../constants";
+
+import { Token } from "../../typings";
 
 const UnderlinedTableRow = styled(TableRow)`
   border-bottom-width: 3px;
@@ -57,11 +62,14 @@ const NewPayoutRow = () => {
 };
 
 const PayoutList = ({ tokens }: { tokens: Token[] }) => {
+  const safeInfo = useSafeInfo();
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
+
   const tokenList = useMemo(() => tokens.map(token => <TokenRow token={token} />), [tokens]);
 
   return (
     <Table>
-      <NewPayoutRow />
+      {hasRootPermission && <NewPayoutRow />}
       {tokenList}
     </Table>
   );
