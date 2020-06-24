@@ -44,13 +44,11 @@ const getDomainTokenBalance = (
 const TokenRow = ({
   token,
   domainId,
-  hasRootRole,
   hasAdministrationRole,
   hasFundingRole,
 }: {
   token: Token;
   domainId: number;
-  hasRootRole: boolean;
   hasAdministrationRole: boolean;
   hasFundingRole: boolean;
 }) => {
@@ -73,7 +71,6 @@ const TokenRow = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         token={token}
-        hasRootRole={hasRootRole}
         hasAdministrationRole={hasAdministrationRole}
         hasFundingRole={hasFundingRole}
       />
@@ -117,12 +114,11 @@ const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomain
         <TokenRow
           token={token}
           domainId={currentDomainId}
-          hasRootRole={hasRootPermission}
           hasAdministrationRole={hasAdministrationPermission}
           hasFundingRole={hasFundingPermission}
         />
       )),
-    [tokens, currentDomainId, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
+    [tokens, currentDomainId, hasAdministrationPermission, hasFundingPermission],
   );
 
   return (

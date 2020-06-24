@@ -7,14 +7,12 @@ const TokenModal = ({
   isOpen,
   setIsOpen,
   token,
-  hasRootRole,
   hasAdministrationRole,
   hasFundingRole,
 }: {
   isOpen: boolean;
   setIsOpen: Function;
   token: Token;
-  hasRootRole: boolean;
   hasAdministrationRole: boolean;
   hasFundingRole: boolean;
 }): ReactElement | null => {
@@ -45,10 +43,9 @@ const TokenModal = ({
         <TokenModalBody
           currentTab={currentTab}
           handleChangeTab={handleChangeTab}
-          amount={amount}
-          handleChangeAmount={handleChangeAmount}
+          _amount={amount}
+          _handleChangeAmount={handleChangeAmount}
           token={token}
-          hasRootRole={hasRootRole}
           hasAdministrationRole={hasAdministrationRole}
           hasFundingRole={hasFundingRole}
         />
