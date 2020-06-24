@@ -3,10 +3,11 @@ import { formatUnits } from "ethers/utils";
 
 import { TableRow, TableCell } from "@material-ui/core";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
-import styled from "styled-components";
 
 import { ColonyRole } from "@colony/colony-js";
 import Table from "../common/StyledTable";
+import UnderlinedTableRow from "../common/UnderLinedTableRow";
+
 import PayoutModal from "../Modals/PayoutModal";
 
 import { useSafeInfo } from "../../contexts/SafeContext";
@@ -15,11 +16,6 @@ import { useColonyClient, useHasDomainPermission } from "../../contexts/ColonyCo
 import { REWARDS_FUNDING_POT_ID } from "../../constants";
 
 import { Token } from "../../typings";
-
-const UnderlinedTableRow = styled(TableRow)`
-  border-bottom-width: 3px;
-  border-bottom-style: solid;
-`;
 
 const TokenRow = ({ token }: { token: Token }) => {
   const colonyClient = useColonyClient();

@@ -1,22 +1,16 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { TableRow, TableCell, Tooltip } from "@material-ui/core";
 
-import styled from "styled-components";
-
 import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
+import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import Table from "../common/StyledTable";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
 import { useColonyRoles, useHasDomainPermission } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
-
-const UnderlinedTableRow = styled(TableRow)`
-  border-bottom-width: 3px;
-  border-bottom-style: solid;
-`;
 
 const AddressRow = ({
   address,
