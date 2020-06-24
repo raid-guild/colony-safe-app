@@ -33,7 +33,6 @@ export default function ColonyTree({
   };
 
   const handleSelect = (_event: any, nodeIds: string[]) => {
-    console.log(nodeIds);
     setCurrentDomainId(parseInt(nodeIds.toString(), 10));
   };
   return (
