@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { TableRow, TableCell } from "@material-ui/core";
-import { ColonyRole } from "@colony/colony-js";
-import { formatUnits } from "ethers/utils";
+import { ColonyRole, ColonyClient } from "@colony/colony-js";
+import { formatUnits, BigNumber } from "ethers/utils";
 import Table from "../common/StyledTable";
 
 import TokenModal from "../Modals/TokenModal";
@@ -9,6 +9,34 @@ import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../..
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token, Domain } from "../../typings";
 import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
+
+/*
+ * Get token balance of a domain within the colony.
+ * Also supports reading two special cases: the rewards pot and the sum of all non-rewards pots.
+ *
+ * This is done by passing in the "extended" domain ids of:
+ * Rewards pot: 0
+ * Sum of all non-rewards pots: -1
+ */
+const getDomainTokenBalance = (
+  colonyClient: ColonyClient,
+  domains: Domain[],
+  domainId: number,
+  token: string,
+): Promise<BigNumber> => {
+  if (domainId === ALL_DOMAINS_ID) {
+    return colonyClient.getNonRewardPotsTotal(token);
+  }
+  if (domainId === REWARDS_FUNDING_POT_ID) {
+    return colonyClient.getFundingPotBalance(REWARDS_FUNDING_POT_ID, token);
+  }
+
+  const domainInfo = domains.find((domain: Domain) => domainId === domain.domainId.toNumber());
+  if (domainInfo) {
+    return colonyClient.getFundingPotBalance(domainInfo.fundingPotId, token);
+  }
+  return new Promise(resolve => resolve(new BigNumber(0)));
+};
 
 const TokenRow = ({
   token,
@@ -30,20 +58,9 @@ const TokenRow = ({
 
   useEffect(() => {
     if (colonyClient) {
-      if (domainId === ALL_DOMAINS_ID) {
-        colonyClient.getNonRewardPotsTotal(token.address).then(tokenBalance => setBalance(tokenBalance.toString()));
-      } else if (domainId === REWARDS_FUNDING_POT_ID) {
-        colonyClient
-          .getFundingPotBalance(REWARDS_FUNDING_POT_ID, token.address)
-          .then(tokenBalance => setBalance(tokenBalance.toString()));
-      } else {
-        const domainInfo = colonyDomains.find((domain: Domain) => domainId === domain.domainId.toNumber());
-        if (domainInfo) {
-          colonyClient
-            .getFundingPotBalance(domainInfo.fundingPotId, token.address)
-            .then(tokenBalance => setBalance(tokenBalance.toString()));
-        }
-      }
+      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token.address).then(tokenBalance =>
+        setBalance(tokenBalance.toString()),
+      );
     }
   }, [colonyClient, colonyDomains, domainId, token.address]);
 
