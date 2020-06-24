@@ -8,7 +8,7 @@ import TokenModal from "../Modals/TokenModal";
 import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token, Domain } from "../../typings";
-import { ALL_DOMAINS_ID } from "../../constants";
+import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
 
 const TokenRow = ({
   token,
@@ -32,6 +32,10 @@ const TokenRow = ({
     if (colonyClient) {
       if (domainId === ALL_DOMAINS_ID) {
         colonyClient.getNonRewardPotsTotal(token.address).then(tokenBalance => setBalance(tokenBalance.toString()));
+      } else if (domainId === REWARDS_FUNDING_POT_ID) {
+        colonyClient
+          .getFundingPotBalance(REWARDS_FUNDING_POT_ID, token.address)
+          .then(tokenBalance => setBalance(tokenBalance.toString()));
       } else {
         const domainInfo = colonyDomains.find((domain: Domain) => domainId === domain.domainId.toNumber());
         if (domainInfo) {
