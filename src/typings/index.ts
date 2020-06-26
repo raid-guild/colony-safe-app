@@ -1,4 +1,5 @@
 import { BigNumberish, BigNumber } from "ethers/utils";
+import { ColonyRole } from "@colony/colony-js";
 
 export type Token = {
   address: string;
@@ -40,4 +41,12 @@ export type PayoutInfo = {
   7?: boolean;
   amountRemaining?: BigNumber;
   finalized?: boolean;
+};
+
+export type PermissionUpdate = {
+  role: ColonyRole;
+  setTo: boolean;
+  domainId?: BigNumberish;
+  permissionDomainId?: BigNumberish;
+  childSkillIndex?: BigNumberish;
 };
