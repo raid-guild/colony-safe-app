@@ -1,9 +1,12 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { TableRow, TableCell } from "@material-ui/core";
+
 import { ColonyRole, ColonyClient } from "@colony/colony-js";
 import { formatUnits, BigNumber } from "ethers/utils";
-import Table from "../common/StyledTable";
+import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
+import Table from "../common/StyledTable";
+import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import TokenModal from "../Modals/TokenModal";
 import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
@@ -41,13 +44,11 @@ const getDomainTokenBalance = (
 const TokenRow = ({
   token,
   domainId,
-  hasRootRole,
   hasAdministrationRole,
   hasFundingRole,
 }: {
   token: Token;
   domainId: number;
-  hasRootRole: boolean;
   hasAdministrationRole: boolean;
   hasFundingRole: boolean;
 }) => {
@@ -70,7 +71,6 @@ const TokenRow = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         token={token}
-        hasRootRole={hasRootRole}
         hasAdministrationRole={hasAdministrationRole}
         hasFundingRole={hasFundingRole}
       />
@@ -78,6 +78,22 @@ const TokenRow = ({
         <TableCell>{token.symbol}</TableCell>
         <TableCell align="right">{formatUnits(balance, token.decimals)}</TableCell>
       </TableRow>
+    </>
+  );
+};
+
+const MintTokensRow = () => {
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
+  return (
+    <>
+      <UnderlinedTableRow onClick={() => console.log("Opening Mint Tokens modal")}>
+        <TableCell>
+          <Text size="lg">Mint Tokens</Text>
+        </TableCell>
+        <TableCell align="right">
+          <Icon type="add" size="md" />
+        </TableCell>
+      </UnderlinedTableRow>
     </>
   );
 };
@@ -98,15 +114,19 @@ const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomain
         <TokenRow
           token={token}
           domainId={currentDomainId}
-          hasRootRole={hasRootPermission}
           hasAdministrationRole={hasAdministrationPermission}
           hasFundingRole={hasFundingPermission}
         />
       )),
-    [tokens, currentDomainId, hasRootPermission, hasAdministrationPermission, hasFundingPermission],
+    [tokens, currentDomainId, hasAdministrationPermission, hasFundingPermission],
   );
 
-  return <Table>{tokenList}</Table>;
+  return (
+    <Table>
+      {hasRootPermission && <MintTokensRow />}
+      {tokenList}
+    </Table>
+  );
 };
 
 export default TokenList;

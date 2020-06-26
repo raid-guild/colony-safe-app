@@ -223,4 +223,19 @@ export const useTokensInfo = () => {
   return tokensInfo;
 };
 
+export const useRewardInverse = (): BigNumber => {
+  const colonyClient = useColonyClient();
+  const [rewardInverse, setRewardInverse] = useState<BigNumber>(
+    new BigNumber("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+  );
+
+  useEffect(() => {
+    if (colonyClient) {
+      colonyClient.getRewardInverse().then((rewards: BigNumber) => setRewardInverse(rewards));
+    }
+  }, [colonyClient]);
+
+  return rewardInverse;
+};
+
 export default ColonyProvider;
