@@ -85,17 +85,26 @@ const AddAddressRow = () => {
   );
 };
 
-const PermissionsList = () => {
+const PermissionsList = ({ currentDomainId }: { currentDomainId: number }) => {
   const safeInfo = useSafeInfo();
-  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
+  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Root);
   const roles: ColonyRoles = useColonyRoles();
 
   const addressList = useMemo(
     () =>
       roles.map(({ address, domains }) => (
-        <AddressRow address={address} permissions={domains[0]} hasRootPermission={hasRootPermission} />
+        <AddressRow
+          address={address}
+          permissions={
+            domains.find(({ domainId }: { domainId: number }) => domainId === currentDomainId) || {
+              domainId: currentDomainId,
+              roles: [],
+            }
+          }
+          hasRootPermission={hasRootPermission}
+        />
       )),
-    [roles, hasRootPermission],
+    [roles, hasRootPermission, currentDomainId],
   );
 
   return (

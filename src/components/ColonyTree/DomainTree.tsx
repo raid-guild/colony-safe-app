@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
-import { ColonyClient } from "@colony/colony-js";
 
 import TreeView from "@material-ui/lab/TreeView";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import { useColonyClient } from "../../contexts/ColonyContext";
-import getColonyDomains from "../../utils/colony/getColonyDomains";
-import { Domain } from "../../typings";
 import DomainTreeItems from "./DomainTreeItems";
+import { useColonyDomains } from "../../contexts/ColonyContext";
 
 const useStyles = makeStyles({
   root: {
@@ -19,26 +15,36 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DomainTree() {
-  const colonyClient: ColonyClient | undefined = useColonyClient();
-  const [domains, setDomains] = useState<Domain[]>([]);
+export default function DomainTree({
+  currentDomainId,
+  setCurrentDomainId,
+}: {
+  currentDomainId: number;
+  setCurrentDomainId: Function;
+}) {
+  const domains = useColonyDomains();
   const classes = useStyles();
+  const [expanded, setExpanded] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyDomains(colonyClient).then((newDomains: Domain[]) => setDomains(newDomains));
-    } else {
-      setDomains([]);
-    }
-  }, [colonyClient]);
+  const handleToggle = (_event: any, nodeIds: string[]) => {
+    setExpanded(nodeIds);
+  };
+
+  const handleSelect = (_event: any, nodeIds: string[]) => {
+    setCurrentDomainId(parseInt(nodeIds.toString(), 10));
+  };
 
   return (
     <TreeView
       className={classes.root}
-      defaultExpanded={["0"]}
+      defaultExpanded={["1"]}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<div style={{ width: 24 }} />}
+      expanded={expanded}
+      selected={[currentDomainId.toString()]}
+      onNodeToggle={handleToggle}
+      onNodeSelect={handleSelect}
     >
       <DomainTreeItems domains={domains} />
     </TreeView>

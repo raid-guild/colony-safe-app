@@ -58,6 +58,7 @@ const ColonyPage = () => {
   const tokens = useTokensInfo();
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<TabsLabels>(0);
+  const [currentDomainId, setCurrentDomainId] = useState<number>(1);
 
   const handleChange = (_event: ChangeEvent<{}>, newValue: number) => setCurrentTab(newValue);
 
@@ -71,15 +72,15 @@ const ColonyPage = () => {
         </Tabs>
         <TabPanel value={currentTab} index={TabsLabels.Tokens}>
           <LeftWrapper>
-            <ColonyTree />
+            <ColonyTree currentDomainId={currentDomainId} setCurrentDomainId={setCurrentDomainId} />
           </LeftWrapper>
-          <TokenList tokens={tokens} />
+          <TokenList tokens={tokens} currentDomainId={currentDomainId} />
         </TabPanel>
         <TabPanel value={currentTab} index={TabsLabels.Permissions}>
           <LeftWrapper>
-            <DomainTree />
+            <DomainTree currentDomainId={currentDomainId} setCurrentDomainId={setCurrentDomainId} />
           </LeftWrapper>
-          <PermissionsList />
+          <PermissionsList currentDomainId={Math.max(currentDomainId, 1)} />
         </TabPanel>
         <TabPanel value={currentTab} index={TabsLabels.Rewards}>
           <LeftWrapper>
