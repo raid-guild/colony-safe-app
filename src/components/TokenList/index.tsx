@@ -12,6 +12,7 @@ import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../..
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { Token, Domain } from "../../typings";
 import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
+import MintModal from "../Modals/MintModal";
 
 /*
  * Get token balance of a domain within the colony.
@@ -83,10 +84,11 @@ const TokenRow = ({
 };
 
 const MintTokensRow = () => {
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <UnderlinedTableRow onClick={() => console.log("Opening Mint Tokens modal")}>
+      <MintModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
         <TableCell>
           <Text size="lg">Mint Tokens</Text>
         </TableCell>
