@@ -9,13 +9,13 @@ import {
   getColonyRoles,
   ColonyRole,
 } from "@colony/colony-js";
-import getTokenClient, { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
+import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { InfuraProvider } from "ethers/providers";
 import { BigNumber } from "ethers/utils";
-import getColonyTokens from "../utils/colony/getColonyTokens";
 import { Token, Domain } from "../typings";
 import userHasDomainRole from "../utils/colony/userHasDomainRole";
 import getColonyDomains from "../utils/colony/getColonyDomains";
+import getColonyTokensInfo from "../utils/colony/getColonyTokensInfo";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -26,6 +26,7 @@ interface State {
   colonyClient?: ColonyClient;
   colonyDomains: Domain[];
   colonyRoles: ColonyRoles;
+  tokens: Token[];
 }
 
 export const ColonyContext = createContext({} as State);
@@ -40,6 +41,7 @@ function ColonyProvider({ children }: Props) {
   const [networkClient, setNetworkClient] = useState<NetworkClient>();
   const [colonyDomains, setColonyDomains] = useState<Domain[]>([]);
   const [colonyRoles, setColonyRoles] = useState<ColonyRoles>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
 
   const network = "mainnet";
   useEffect(() => {
@@ -95,8 +97,15 @@ function ColonyProvider({ children }: Props) {
     }
   }, [colonyClient]);
 
+  useEffect(() => {
+    if (colonyClient) {
+      getColonyTokensInfo(colonyClient).then((colonyTokens: Token[]) => setTokens(colonyTokens));
+    }
+  }, [colonyClient]);
+
+  console.log("tokens", tokens);
   return (
-    <ColonyContext.Provider value={{ colonyClient, colonyDomains, colonyRoles, setColony }}>
+    <ColonyContext.Provider value={{ colonyClient, colonyDomains, colonyRoles, tokens, setColony }}>
       {children}
     </ColonyContext.Provider>
   );
@@ -182,45 +191,9 @@ export const useNativeTokenInfo = () => {
 };
 
 export const useTokens = () => {
-  const colonyClient = useColonyClient();
-  const [tokens, setTokens] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (colonyClient) {
-      getColonyTokens(colonyClient).then((tokenAddresses: string[]) => setTokens(tokenAddresses));
-    }
-  }, [colonyClient]);
+  const { tokens } = useColonyContext();
 
   return tokens;
-};
-
-export const useTokensInfo = () => {
-  const colonyClient = useColonyClient();
-  const tokens = useTokens();
-  const [tokensInfo, setTokensInfo] = useState<Token[]>([]);
-
-  useEffect(() => {
-    if (colonyClient && tokens.length > 0) {
-      Promise.all(
-        tokens.map(async (tokenAddress: string) => {
-          if (tokenAddress === "0x0000000000000000000000000000000000000000") {
-            return {
-              address: "0x0000000000000000000000000000000000000000",
-              name: "Ether",
-              symbol: "ETH",
-              decimals: 18,
-            };
-          }
-          return {
-            address: tokenAddress,
-            ...(await getTokenClient(tokenAddress, colonyClient.provider).getTokenInfo()),
-          };
-        }),
-      ).then(newTokensInfo => setTokensInfo(newTokensInfo));
-    }
-  }, [colonyClient, tokens]);
-
-  return tokensInfo;
 };
 
 export const useRewardInverse = (): BigNumber => {

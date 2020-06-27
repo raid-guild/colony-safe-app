@@ -16,6 +16,7 @@ import { useColonyClient, useHasDomainPermission } from "../../contexts/ColonyCo
 import { REWARDS_FUNDING_POT_ID } from "../../constants";
 
 import { Token } from "../../typings";
+import StartPayoutModal from "../Modals/StartPayoutModal";
 
 const TokenRow = ({ token }: { token: Token }) => {
   const colonyClient = useColonyClient();
@@ -42,10 +43,11 @@ const TokenRow = ({ token }: { token: Token }) => {
 };
 
 const NewPayoutRow = () => {
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <UnderlinedTableRow onClick={() => console.log("Opening New Payout modal")}>
+      <StartPayoutModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
         <TableCell>
           <Text size="lg">New Payout</Text>
         </TableCell>

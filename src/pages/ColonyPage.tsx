@@ -3,7 +3,7 @@ import React, { useState, ChangeEvent } from "react";
 import { Tabs, Tab } from "@material-ui/core";
 import styled from "styled-components";
 
-import { useTokensInfo } from "../contexts/ColonyContext";
+import { useTokens } from "../contexts/ColonyContext";
 
 import PayoutSidebar from "../components/PayoutList/Sidebar";
 import DomainTree from "../components/ColonyTree/DomainTree";
@@ -55,7 +55,7 @@ enum TabsLabels {
 }
 
 const ColonyPage = () => {
-  const tokens = useTokensInfo();
+  const tokens = useTokens();
   /** State Variables **/
   const [currentTab, setCurrentTab] = useState<TabsLabels>(0);
   const [currentDomainId, setCurrentDomainId] = useState<number>(1);
