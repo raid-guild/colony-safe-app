@@ -16,6 +16,7 @@ import { Token, Domain } from "../typings";
 import userHasDomainRole from "../utils/colony/userHasDomainRole";
 import getColonyDomains from "../utils/colony/getColonyDomains";
 import getColonyTokensInfo from "../utils/colony/getColonyTokensInfo";
+import { MAX_U256 } from "../constants";
 
 interface Props {
   children: ReactElement | ReactElement[];
@@ -198,9 +199,7 @@ export const useTokens = () => {
 
 export const useRewardInverse = (): BigNumber => {
   const colonyClient = useColonyClient();
-  const [rewardInverse, setRewardInverse] = useState<BigNumber>(
-    new BigNumber("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
-  );
+  const [rewardInverse, setRewardInverse] = useState<BigNumber>(new BigNumber(MAX_U256));
 
   useEffect(() => {
     if (colonyClient) {
