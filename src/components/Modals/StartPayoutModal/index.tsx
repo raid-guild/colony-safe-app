@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useMemo, useState } from "react";
 import { GenericModal, Text, ModalFooterConfirmation, Select } from "@gnosis.pm/safe-react-components";
 import { useColonyClient, useNativeTokenAddress, useTokens } from "../../../contexts/ColonyContext";
-import startPayoutRoundTxs from "../../../utils/transactions/startPayoutRound";
+import startPayoutRoundTxs from "../../../utils/transactions/rewards/startPayoutRound";
 import { useSafeInfo, useAppsSdk } from "../../../contexts/SafeContext";
 import { Token } from "../../../typings";
 

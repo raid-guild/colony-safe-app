@@ -1,6 +1,6 @@
 import { ColonyClient } from "@colony/colony-js";
 import { Interface } from "ethers/utils";
-import { Transaction } from "../../typings";
+import { Transaction } from "../../../typings";
 
 const getReputationProof = async (colonyClient: ColonyClient, userAddress: string) => {
   const { skillId } = await colonyClient.getDomain(1);

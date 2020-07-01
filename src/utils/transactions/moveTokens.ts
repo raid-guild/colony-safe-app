@@ -2,13 +2,19 @@ import { ColonyClient } from "@colony/colony-js";
 import { Interface, BigNumber } from "ethers/utils";
 import { Transaction } from "../../typings";
 
-const setRewardInverseTxs = (colonyClient: ColonyClient, rewardInverse: BigNumber): Transaction[] => {
+const moveTokenTxs = (
+  colonyClient: ColonyClient,
+  token: string,
+  amount: BigNumber,
+  fromPot: number,
+  toPot: number,
+): Transaction[] => {
   const colonyInterface: Interface = colonyClient.interface;
 
   const txs: Transaction[] = [];
 
   txs.push({
-    data: colonyInterface.functions.setRewardInverse.encode([rewardInverse]),
+    data: colonyInterface.functions.moveFundsBetweenPots.encode([fromPot, toPot, amount, token]),
     to: colonyClient.address,
     value: 0,
   });
@@ -16,4 +22,4 @@ const setRewardInverseTxs = (colonyClient: ColonyClient, rewardInverse: BigNumbe
   return txs;
 };
 
-export default setRewardInverseTxs;
+export default moveTokenTxs;

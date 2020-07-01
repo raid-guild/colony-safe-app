@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useCallback } from "react";
 import { Button, GenericModal, TextField, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
 import { bigNumberify } from "ethers/utils";
-import setRewardInverseTxs from "../../../utils/transactions/setRewardInverse";
+import setRewardInverseTxs from "../../../utils/transactions/rewards/setRewardInverse";
 import { useAppsSdk } from "../../../contexts/SafeContext";
 import { useColonyClient } from "../../../contexts/ColonyContext";
 import { MAX_U256 } from "../../../constants";
