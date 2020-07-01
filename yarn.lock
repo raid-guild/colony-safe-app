@@ -1117,10 +1117,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@colony/colony-js@^2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@colony/colony-js/-/colony-js-2.0.0-alpha.2.tgz#48c8ae556001046842c5091c705b22ede7cec650"
-  integrity sha512-gE7VEzd64iDlW3EZhorNHe1iFqQ41eQQDjns4g62KMwPT9+omsGRrf0arHx1QbKyA2ztsF3Pmu6T8dubM6iNRw==
+"@colony/colony-js@2.0.0-alpha.5":
+  version "2.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@colony/colony-js/-/colony-js-2.0.0-alpha.5.tgz#29b851a3ff4f777abab63d1f3b8341dc6daa3803"
+  integrity sha512-5+qJDg3ctIwHxohzzQG3rgTFZuKbPUV3sfsPCA3hUoeE9FL1WNXTv9PDwxmChajNdye9Pewf55nuqGkfqOZq5g==
   dependencies:
     isomorphic-fetch "^2.2.1"
 
