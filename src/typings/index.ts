@@ -23,6 +23,7 @@ export type Domain = {
 };
 
 export type PayoutInfo = {
+  id: BigNumber;
   amount: BigNumber;
   blockTimestamp: BigNumber;
   colonyWideReputation: BigNumber;

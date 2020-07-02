@@ -86,7 +86,7 @@ const ColonyPage = () => {
           <LeftWrapper>
             <PayoutSidebar />
           </LeftWrapper>
-          <PayoutList tokens={tokens} />
+          <PayoutList />
         </TabPanel>
       </TabsWrapper>
     </OuterWrapper>

@@ -31,7 +31,9 @@ const getActivePayouts = async (client: ColonyClient): Promise<PayoutInfo[]> => 
   const endedPayouts = await getEndedPayouts(client);
 
   const activePayouts = startedPayouts.filter(payoutId => !endedPayouts.includes(payoutId));
-  return Promise.all(activePayouts.map(payoutId => client.getRewardPayoutInfo(payoutId)));
+  return Promise.all(
+    activePayouts.map(async payoutId => ({ id: payoutId, ...(await client.getRewardPayoutInfo(payoutId)) })),
+  );
 };
 
 export default getActivePayouts;

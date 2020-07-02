@@ -1,7 +1,7 @@
 import { ColonyClient } from "@colony/colony-js";
 import { Interface, BigNumber } from "ethers/utils";
 import { Zero } from "ethers/constants";
-import { Transaction } from "../../../typings";
+import { Transaction, PayoutInfo } from "../../../typings";
 import getReputationProof from "../../colony/getReputationProof";
 
 const bnSqrt = (bn: BigNumber, isGreater?: boolean) => {
@@ -20,20 +20,17 @@ const bnSqrt = (bn: BigNumber, isGreater?: boolean) => {
   return b;
 };
 
-const startPayoutRoundTxs = async (
+const claimPayoutTxs = async (
   colonyClient: ColonyClient,
-  token: string,
   userAddress: string,
+  payout: PayoutInfo,
 ): Promise<Transaction[]> => {
   const colonyInterface: Interface = colonyClient.interface;
-  const payoutId = 1;
-  const { reputationState, amount, totalTokens, colonyWideReputation } = await colonyClient.getRewardPayoutInfo(
-    payoutId,
-  );
+  const { id, amount, totalTokens, colonyWideReputation } = payout;
   const { key, value, branchMask, siblings, reputationAmount } = await getReputationProof(colonyClient, userAddress);
 
   const tokenLockingClient = await colonyClient.networkClient.getTokenLockingClient();
-  const { balance } = await tokenLockingClient.getUserLock(token, userAddress);
+  const { balance } = await tokenLockingClient.getUserLock(payout.tokenAddress, userAddress);
 
   const squareRoots: BigNumber[] = [Zero, Zero, Zero, Zero, Zero, Zero, Zero];
   squareRoots[0] = bnSqrt(reputationAmount);
@@ -47,7 +44,7 @@ const startPayoutRoundTxs = async (
   const txs: Transaction[] = [];
 
   txs.push({
-    data: colonyInterface.functions.claimRewardPayout.encode([payoutId, squareRoots, key, value, branchMask, siblings]),
+    data: colonyInterface.functions.claimRewardPayout.encode([id, squareRoots, key, value, branchMask, siblings]),
     to: colonyClient.address,
     value: 0,
   });
@@ -55,4 +52,4 @@ const startPayoutRoundTxs = async (
   return txs;
 };
 
-export default startPayoutRoundTxs;
+export default claimPayoutTxs;
