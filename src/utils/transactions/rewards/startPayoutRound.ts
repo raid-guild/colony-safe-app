@@ -1,11 +1,7 @@
 import { ColonyClient } from "@colony/colony-js";
 import { Interface } from "ethers/utils";
 import { Transaction } from "../../../typings";
-
-const getReputationProof = async (colonyClient: ColonyClient, userAddress: string) => {
-  const { skillId } = await colonyClient.getDomain(1);
-  return colonyClient.getReputation(skillId, userAddress);
-};
+import getReputationProof from "../../colony/getReputationProof";
 
 const startPayoutRoundTxs = async (
   colonyClient: ColonyClient,
