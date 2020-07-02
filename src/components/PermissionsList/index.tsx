@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { TableRow, TableCell, Tooltip } from "@material-ui/core";
+import { TableRow, TableCell, Tooltip, TableBody } from "@material-ui/core";
 
 import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
@@ -88,6 +88,7 @@ const PermissionsList = ({ currentDomainId }: { currentDomainId: number }) => {
     () =>
       roles.map(({ address, domains }) => (
         <AddressRow
+          key={address}
           address={address}
           permissions={
             domains.find(({ domainId }: { domainId: number }) => domainId === currentDomainId) || {
@@ -103,16 +104,18 @@ const PermissionsList = ({ currentDomainId }: { currentDomainId: number }) => {
 
   return (
     <Table>
-      {hasRootPermission && <AddAddressRow />}
-      {addressList.length > 0 ? (
-        addressList
-      ) : (
-        <TableRow>
-          <TableCell align="center" colSpan={2}>
-            No Permissions Found
-          </TableCell>
-        </TableRow>
-      )}
+      <TableBody>
+        {hasRootPermission && <AddAddressRow />}
+        {addressList.length > 0 ? (
+          addressList
+        ) : (
+          <TableRow>
+            <TableCell align="center" colSpan={2}>
+              No Permissions Found
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
     </Table>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { TableRow, TableCell } from "@material-ui/core";
+import { TableRow, TableCell, TableBody } from "@material-ui/core";
 
 import { ColonyRole, ColonyClient } from "@colony/colony-js";
 import { formatUnits, BigNumber } from "ethers/utils";
@@ -114,6 +114,7 @@ const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomain
     () =>
       tokens.map(token => (
         <TokenRow
+          key={token.address}
           token={token}
           domainId={currentDomainId}
           hasAdministrationRole={hasAdministrationPermission}
@@ -125,8 +126,10 @@ const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomain
 
   return (
     <Table>
-      {hasRootPermission && <MintTokensRow />}
-      {tokenList}
+      <TableBody>
+        {hasRootPermission && <MintTokensRow />}
+        {tokenList}
+      </TableBody>
     </Table>
   );
 };
