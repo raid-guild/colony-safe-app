@@ -5,7 +5,7 @@ import { Token } from "../../typings";
 
 const getColonyTokensInfo = async (colonyClient: ColonyClient): Promise<Token[]> => {
   const tokenAddresses = await getColonyTokens(colonyClient);
-  return Promise.all(
+  const tokens: (Token | undefined)[] = await Promise.all(
     tokenAddresses.map(async (tokenAddress: string) => {
       if (tokenAddress === AddressZero) {
         return {
@@ -15,12 +15,19 @@ const getColonyTokensInfo = async (colonyClient: ColonyClient): Promise<Token[]>
           decimals: 18,
         };
       }
-      return {
-        address: tokenAddress,
-        ...(await getTokenClient(tokenAddress, colonyClient.provider).getTokenInfo()),
-      };
+      try {
+        return {
+          address: tokenAddress,
+          ...(await getTokenClient(tokenAddress, colonyClient.provider).getTokenInfo()),
+        };
+      } catch (e) {
+        console.log(e);
+        return undefined;
+      }
     }),
   );
+
+  return tokens.filter(token => typeof token !== "undefined") as Token[];
 };
 
 export default getColonyTokensInfo;
