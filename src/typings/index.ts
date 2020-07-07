@@ -50,3 +50,11 @@ export type PermissionUpdate = {
   permissionDomainId?: BigNumberish;
   childSkillIndex?: BigNumberish;
 };
+
+export type PermissionProof = [BigNumberish, BigNumberish]; /* [permissionDomainId, childSkillIndex] */
+
+export type MoveFundsBetweenPotsProof = [
+  BigNumberish, // fromPermissionDomainId
+  BigNumberish, // fromChildSkillIndex
+  BigNumberish, // toChildSkillIndex
+];

@@ -2,15 +2,16 @@ import React, { useMemo, useState, useEffect } from "react";
 import { TableRow, TableCell, TableBody } from "@material-ui/core";
 
 import { ColonyRole, ColonyClient } from "@colony/colony-js";
-import { formatUnits, BigNumber } from "ethers/utils";
+import { formatUnits, BigNumber, bigNumberify, BigNumberish } from "ethers/utils";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
+import { Zero } from "ethers/constants";
 import Table from "../common/StyledTable";
 import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import TokenModal from "../Modals/TokenModal";
-import { useHasDomainPermission, useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
+import { useColonyClient, useColonyDomains, usePermissionProof } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
-import { Token, Domain } from "../../typings";
+import { Token, Domain, PermissionProof } from "../../typings";
 import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
 import MintModal from "../Modals/MintModal";
 
@@ -25,7 +26,7 @@ import MintModal from "../Modals/MintModal";
 const getDomainTokenBalance = (
   colonyClient: ColonyClient,
   domains: Domain[],
-  domainId: number,
+  domainId: BigNumberish,
   token: string,
 ): Promise<BigNumber> => {
   if (domainId === ALL_DOMAINS_ID) {
@@ -39,41 +40,49 @@ const getDomainTokenBalance = (
   if (domainInfo) {
     return colonyClient.getFundingPotBalance(domainInfo.fundingPotId, token);
   }
-  return new Promise(resolve => resolve(new BigNumber(0)));
+  return new Promise(resolve => resolve(Zero));
+};
+
+const useDomainTokenBalance = (domainId: BigNumberish, token: string): BigNumber => {
+  const colonyClient = useColonyClient();
+  const colonyDomains = useColonyDomains();
+  const [balance, setBalance] = useState<BigNumber>(Zero);
+
+  useEffect(() => {
+    if (colonyClient) {
+      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token).then(tokenBalance =>
+        setBalance(tokenBalance),
+      );
+    }
+  }, [colonyClient, colonyDomains, domainId, token]);
+
+  return balance;
 };
 
 const TokenRow = ({
   token,
-  domainId,
-  hasAdministrationRole,
-  hasFundingRole,
+  domain,
+  adminPermissionProof,
+  fundingPermissionProof,
 }: {
   token: Token;
-  domainId: number;
-  hasAdministrationRole: boolean;
-  hasFundingRole: boolean;
+  domain: Domain;
+  adminPermissionProof?: PermissionProof;
+  fundingPermissionProof?: PermissionProof;
 }) => {
-  const colonyClient = useColonyClient();
-  const colonyDomains = useColonyDomains();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [balance, setBalance] = useState<string>("0");
-
-  useEffect(() => {
-    if (colonyClient) {
-      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token.address).then(tokenBalance =>
-        setBalance(tokenBalance.toString()),
-      );
-    }
-  }, [colonyClient, colonyDomains, domainId, token.address]);
+  const balance = useDomainTokenBalance(domain.domainId, token.address);
 
   return (
     <>
       <TokenModal
+        // isOpen={typeof adminPermissionProof !== "undefined" && typeof fundingPermissionProof !== "undefined" && isOpen}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         token={token}
-        hasAdministrationRole={hasAdministrationRole}
-        hasFundingRole={hasFundingRole}
+        domain={domain}
+        adminPermissionProof={adminPermissionProof}
+        fundingPermissionProof={fundingPermissionProof}
       />
       <TableRow onClick={() => setIsOpen(true)}>
         <TableCell>{token.symbol}</TableCell>
@@ -102,32 +111,46 @@ const MintTokensRow = () => {
 
 const TokenList = ({ tokens, currentDomainId }: { tokens: Token[]; currentDomainId: number }) => {
   const safeInfo = useSafeInfo();
-  const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Root);
-  const hasAdministrationPermission = useHasDomainPermission(
-    safeInfo?.safeAddress,
+  const client = useColonyClient();
+
+  const [domain, setDomain] = useState<Domain>();
+
+  useEffect(() => {
+    if (client)
+      client
+        .getDomain(currentDomainId)
+        .then(currentDomain =>
+          setDomain({ domainId: bigNumberify(currentDomainId), 2: bigNumberify(currentDomainId), ...currentDomain }),
+        );
+  }, [client, currentDomainId]);
+
+  const rootPermissionProof = usePermissionProof(currentDomainId, ColonyRole.Root, safeInfo?.safeAddress || "");
+  const adminPermissionProof = usePermissionProof(
     currentDomainId,
     ColonyRole.Administration,
+    safeInfo?.safeAddress || "",
   );
-  const hasFundingPermission = useHasDomainPermission(safeInfo?.safeAddress, currentDomainId, ColonyRole.Funding);
+  const fundingPermissionProof = usePermissionProof(currentDomainId, ColonyRole.Funding, safeInfo?.safeAddress || "");
 
   const tokenList = useMemo(
     () =>
+      domain &&
       tokens.map(token => (
         <TokenRow
           key={token.address}
           token={token}
-          domainId={currentDomainId}
-          hasAdministrationRole={hasAdministrationPermission}
-          hasFundingRole={hasFundingPermission}
+          domain={domain}
+          adminPermissionProof={adminPermissionProof}
+          fundingPermissionProof={fundingPermissionProof}
         />
       )),
-    [tokens, currentDomainId, hasAdministrationPermission, hasFundingPermission],
+    [tokens, domain, adminPermissionProof, fundingPermissionProof],
   );
 
   return (
     <Table>
       <TableBody>
-        {hasRootPermission && <MintTokensRow />}
+        {typeof rootPermissionProof !== "undefined" && <MintTokensRow />}
         {tokenList}
       </TableBody>
     </Table>

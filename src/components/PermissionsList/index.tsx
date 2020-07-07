@@ -1,17 +1,16 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { TableRow, TableCell, Tooltip, TableBody } from "@material-ui/core";
 
 import { ColonyRoles, DomainRoles, ColonyRole } from "@colony/colony-js";
 
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 import { BigNumberish } from "ethers/utils";
-import { getPermissionProofs } from "@colony/colony-js/lib/clients/Colony/extensions/commonExtensions";
 import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import Table from "../common/StyledTable";
 import PermissionsModal from "../Modals/PermissionsModal";
 import PermissionIcons from "./PermissionIcons";
 import Address from "../common/Address";
-import { useColonyRoles, useColonyClient } from "../../contexts/ColonyContext";
+import { useColonyRoles, usePermissionProof } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 
 const AddressRow = ({
@@ -94,26 +93,6 @@ const AddAddressRow = () => {
       </UnderlinedTableRow>
     </>
   );
-};
-
-const usePermissionProof = (
-  domainId: BigNumberish,
-  role: ColonyRole,
-  userAddress: string,
-): [BigNumberish, BigNumberish] | undefined => {
-  const client = useColonyClient();
-
-  const [permissionProof, setPermissionProof] = useState<[BigNumberish, BigNumberish]>();
-
-  useEffect(() => {
-    if (client) {
-      getPermissionProofs(client, domainId, role, userAddress)
-        .then(setPermissionProof)
-        .catch(() => setPermissionProof(undefined));
-    }
-  }, [client, domainId, role, userAddress]);
-
-  return permissionProof;
 };
 
 const PermissionsList = ({ currentDomainId }: { currentDomainId: number }) => {

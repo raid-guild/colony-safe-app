@@ -5,7 +5,7 @@ import { ThemeProvider } from "styled-components";
 import App from "./App";
 import GlobalStyles from "./global";
 import SafeProvider from "./contexts/SafeContext";
-import ColonyProvider from "./contexts/ColonyContext";
+import { ColonyProvider } from "./contexts/ColonyContext";
 import theme from "./theme";
 
 ReactDOM.render(
