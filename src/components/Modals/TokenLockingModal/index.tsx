@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent, useCallback } from "react";
 import { Button, GenericModal, TextField, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
+import { parseUnits } from "ethers/utils";
 import { useAppsSdk } from "../../../contexts/SafeContext";
-import { useColonyClient, useNativeTokenAddress } from "../../../contexts/ColonyContext";
+import { useColonyClient, useNativeTokenAddress, useNativeTokenInfo } from "../../../contexts/ColonyContext";
 import depositTxs from "../../../utils/transactions/tokenLocking/deposit";
 import getActivePayouts from "../../../utils/colony/getColonyPayouts";
 import withdrawTxs from "../../../utils/transactions/tokenLocking/withdraw";
@@ -10,6 +11,7 @@ const TokenLockingModal = ({ lock, disabled }: { lock?: boolean; disabled?: bool
   const appsSdk = useAppsSdk();
   const colonyClient = useColonyClient();
   const nativeToken = useNativeTokenAddress() || "";
+  const { decimals } = useNativeTokenInfo() || {};
 
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState<string>("");
@@ -17,15 +19,16 @@ const TokenLockingModal = ({ lock, disabled }: { lock?: boolean; disabled?: bool
   const tokenAction = useCallback(
     (lockAmount: string) => {
       if (colonyClient) {
-        console.log(`${lock ? "Locking" : "Unlocking"} ${lockAmount} of token ${nativeToken}`);
+        const lockWei = parseUnits(lockAmount, decimals);
+        console.log(`${lock ? "Locking" : "Unlocking"} ${lockAmount} of token ${nativeToken} (${lockWei} wei)`);
         if (lock) {
-          depositTxs(colonyClient, nativeToken, lockAmount).then(txs => appsSdk.sendTransactions(txs));
+          depositTxs(colonyClient, nativeToken, lockWei).then(txs => appsSdk.sendTransactions(txs));
         } else {
-          withdrawTxs(colonyClient, nativeToken, lockAmount).then(txs => appsSdk.sendTransactions(txs));
+          withdrawTxs(colonyClient, nativeToken, lockWei).then(txs => appsSdk.sendTransactions(txs));
         }
       }
     },
-    [colonyClient, appsSdk, nativeToken, lock],
+    [colonyClient, decimals, lock, nativeToken, appsSdk],
   );
 
   if (colonyClient) getActivePayouts(colonyClient);
