@@ -117,7 +117,7 @@ export const usePermissionProof = (
   const [permissionProof, setPermissionProof] = useState<PermissionProof>();
 
   useEffect(() => {
-    if (client) {
+    if (client && parseInt(domainId.toString(), 10) > 1) {
       getPermissionProofs(client, domainId, role, userAddress)
         .then(setPermissionProof)
         .catch(() => setPermissionProof(undefined));
