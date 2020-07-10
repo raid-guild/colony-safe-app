@@ -54,6 +54,12 @@ const ColonyENSInput = () => {
         label="Colony Name"
         value={ensName}
         onChange={(e: ChangeEvent<HTMLInputElement>): void => setEnsName(e.target.value)}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>): void => {
+          if (e.key === "Enter") {
+            setClicked(true);
+            handleColonyNameInput(ensName);
+          }
+        }}
       />
       <Button
         onClick={() => {
