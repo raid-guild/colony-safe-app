@@ -1,7 +1,7 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import styled from "styled-components";
 
-import { GenericModal, Text, Switch, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
+import { Checkbox, GenericModal, Text, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
 import { ColonyRole } from "@colony/colony-js";
 import { Permission } from "./types";
 
@@ -71,7 +71,8 @@ const PermissionsToggleList = ({
   return (
     <>
       {permissions.map(i => {
-        const onChange = (checked: boolean) => onPermissionToggle(parseInt(i.id, 10), checked);
+        const onChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) =>
+          onPermissionToggle(parseInt(i.id, 10), checked);
 
         return (
           <StyledItem key={i.id}>
@@ -88,7 +89,7 @@ const PermissionsToggleList = ({
                 </div>
               </div>
             </StyledImageName>
-            <Switch checked={i.checked} onChange={onChange} />
+            <Checkbox label="" name={i.name} checked={i.checked} onChange={onChange} />
           </StyledItem>
         );
       })}
