@@ -104,20 +104,20 @@ const PermissionsList = ({ currentDomainId }: { currentDomainId: number }) => {
 
   const addressList = useMemo(
     () =>
-      roles.map(({ address, domains }) => (
-        <AddressRow
-          key={address}
-          address={address}
-          domain={currentDomainId}
-          permissions={
-            domains.find(({ domainId }: { domainId: number }) => domainId === currentDomainId) || {
-              domainId: currentDomainId,
-              roles: [],
+      // First filter out any addresses which don't have any permissions on the displayed domain
+      roles
+        .filter(({ domains }) => domains.find(({ domainId }: { domainId: number }) => domainId === currentDomainId))
+        .map(({ address, domains }) => (
+          <AddressRow
+            key={address}
+            address={address}
+            domain={currentDomainId}
+            permissions={
+              domains.find(({ domainId }: { domainId: number }) => domainId === currentDomainId) as DomainRoles
             }
-          }
-          permissionProof={permissionProof}
-        />
-      )),
+            permissionProof={permissionProof}
+          />
+        )),
     [roles, permissionProof, currentDomainId],
   );
 
