@@ -1,5 +1,6 @@
 export { default as ColonyProvider } from "./ColonyContext";
 export {
+  useActivePayouts,
   useColonyClient,
   useColonyDomains,
   useColonyDomain,
