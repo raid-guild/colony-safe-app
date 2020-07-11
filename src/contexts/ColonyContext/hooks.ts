@@ -4,10 +4,9 @@ import { ColonyClient, ColonyRoles, ColonyRole, getMoveFundsPermissionProofs } f
 import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { BigNumber, BigNumberish } from "ethers/utils";
 import { getPermissionProofs } from "@colony/colony-js/lib/clients/Colony/extensions/commonExtensions";
-import { Zero } from "ethers/constants";
+import { Zero, MaxUint256 } from "ethers/constants";
 import { Domain, PermissionProof, MoveFundsBetweenPotsProof, Token, PayoutInfo } from "../../typings";
 import userHasDomainRole from "../../utils/colony/userHasDomainRole";
-import { MAX_U256 } from "../../constants";
 import { useColonyContext } from "./ColonyContext";
 import getDomainTokenBalance from "../../utils/colony/getDomainTokenBalance";
 import getActivePayouts from "../../utils/colony/getColonyPayouts";
@@ -119,7 +118,7 @@ export const useToken = (tokenAddress: string): Token | undefined => {
 
 export const useRewardInverse = (): BigNumber => {
   const colonyClient = useColonyClient();
-  const [rewardInverse, setRewardInverse] = useState<BigNumber>(new BigNumber(MAX_U256));
+  const [rewardInverse, setRewardInverse] = useState<BigNumber>(new BigNumber(MaxUint256));
 
   useEffect(() => {
     if (colonyClient) {
