@@ -1,8 +1,11 @@
 export { default as ColonyProvider } from "./ColonyContext";
 export {
+  useActivePayouts,
   useColonyClient,
   useColonyDomains,
+  useColonyDomain,
   useColonyRoles,
+  useDomainTokenBalance,
   useHasDomainPermission,
   useNativeTokenAddress,
   useNativeTokenInfo,
@@ -10,4 +13,5 @@ export {
   useRewardInverse,
   useSetColony,
   useTokens,
+  useToken,
 } from "./hooks";

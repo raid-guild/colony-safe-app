@@ -4,10 +4,12 @@ import { ColonyClient, ColonyRoles, ColonyRole, getMoveFundsPermissionProofs } f
 import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { BigNumber, BigNumberish } from "ethers/utils";
 import { getPermissionProofs } from "@colony/colony-js/lib/clients/Colony/extensions/commonExtensions";
-import { Domain, PermissionProof, MoveFundsBetweenPotsProof } from "../../typings";
+import { Zero, MaxUint256 } from "ethers/constants";
+import { Domain, PermissionProof, MoveFundsBetweenPotsProof, Token, PayoutInfo } from "../../typings";
 import userHasDomainRole from "../../utils/colony/userHasDomainRole";
-import { MAX_U256 } from "../../constants";
 import { useColonyContext } from "./ColonyContext";
+import getDomainTokenBalance from "../../utils/colony/getDomainTokenBalance";
+import getActivePayouts from "../../utils/colony/getColonyPayouts";
 
 export const useColonyClient = (): ColonyClient | undefined => {
   const { colonyClient } = useColonyContext();
@@ -50,6 +52,16 @@ export const useColonyDomains = (): Domain[] => {
   return colonyDomains;
 };
 
+export const useColonyDomain = (domainId: number) => {
+  const domains = useColonyDomains();
+
+  const domain: Domain | undefined = useMemo(() => {
+    return domains.find(testDomain => testDomain.domainId.toNumber() === domainId);
+  }, [domainId, domains]);
+
+  return domain;
+};
+
 export const useColonyVersion = (): BigNumber => {
   const colonyClient = useColonyClient();
   const [colonyVersion, setColonyVersion] = useState<BigNumber>(new BigNumber(0));
@@ -88,15 +100,25 @@ export const useNativeTokenInfo = () => {
   return tokenInfo;
 };
 
-export const useTokens = () => {
+export const useTokens = (): Token[] => {
   const { tokens } = useColonyContext();
 
   return tokens;
 };
 
+export const useToken = (tokenAddress: string): Token | undefined => {
+  const tokens = useTokens();
+
+  const token: Token | undefined = useMemo(() => {
+    return tokens.find(testToken => testToken.address === tokenAddress);
+  }, [tokenAddress, tokens]);
+
+  return token;
+};
+
 export const useRewardInverse = (): BigNumber => {
   const colonyClient = useColonyClient();
-  const [rewardInverse, setRewardInverse] = useState<BigNumber>(new BigNumber(MAX_U256));
+  const [rewardInverse, setRewardInverse] = useState<BigNumber>(new BigNumber(MaxUint256));
 
   useEffect(() => {
     if (colonyClient) {
@@ -166,4 +188,31 @@ export const useOneTx = (
   }, [client, domainId, role, userAddress]);
 
   return permissionProof;
+};
+
+export const useDomainTokenBalance = (domainId: BigNumberish, token: string): BigNumber => {
+  const colonyClient = useColonyClient();
+  const colonyDomains = useColonyDomains();
+  const [balance, setBalance] = useState<BigNumber>(Zero);
+
+  useEffect(() => {
+    if (colonyClient) {
+      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token).then(tokenBalance =>
+        setBalance(tokenBalance),
+      );
+    }
+  }, [colonyClient, colonyDomains, domainId, token]);
+
+  return balance;
+};
+
+export const useActivePayouts = (): PayoutInfo[] => {
+  const colonyClient = useColonyClient();
+  const [activePayouts, setActivePayouts] = useState<PayoutInfo[]>([]);
+
+  useEffect(() => {
+    if (colonyClient) getActivePayouts(colonyClient).then(setActivePayouts);
+  }, [colonyClient]);
+
+  return activePayouts;
 };

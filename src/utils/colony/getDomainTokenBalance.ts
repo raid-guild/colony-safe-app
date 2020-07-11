@@ -1,10 +1,6 @@
-import { useState, useEffect } from "react";
-
 import { ColonyClient } from "@colony/colony-js";
 import { BigNumber, BigNumberish } from "ethers/utils";
-
 import { Zero } from "ethers/constants";
-import { useColonyClient, useColonyDomains } from "../../contexts/ColonyContext";
 import { Domain } from "../../typings";
 import { ALL_DOMAINS_ID, REWARDS_FUNDING_POT_ID } from "../../constants";
 
@@ -36,20 +32,4 @@ const getDomainTokenBalance = (
   return new Promise(resolve => resolve(Zero));
 };
 
-const useDomainTokenBalance = (domainId: BigNumberish, token: string): BigNumber => {
-  const colonyClient = useColonyClient();
-  const colonyDomains = useColonyDomains();
-  const [balance, setBalance] = useState<BigNumber>(Zero);
-
-  useEffect(() => {
-    if (colonyClient) {
-      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token).then(tokenBalance =>
-        setBalance(tokenBalance),
-      );
-    }
-  }, [colonyClient, colonyDomains, domainId, token]);
-
-  return balance;
-};
-
-export default useDomainTokenBalance;
+export default getDomainTokenBalance;

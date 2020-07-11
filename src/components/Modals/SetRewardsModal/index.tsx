@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent, useCallback } from "react";
 import { Button, GenericModal, TextField, ModalFooterConfirmation } from "@gnosis.pm/safe-react-components";
 import { bigNumberify } from "ethers/utils";
+import { MaxUint256 } from "ethers/constants";
 import setRewardInverseTxs from "../../../utils/transactions/rewards/setRewardInverse";
 import { useAppsSdk } from "../../../contexts/SafeContext";
 import { useColonyClient } from "../../../contexts/ColonyContext";
-import { MAX_U256 } from "../../../constants";
 
 const SetRewardsModal = ({ disabled }: { disabled?: boolean }) => {
   const appsSdk = useAppsSdk();
@@ -17,7 +17,7 @@ const SetRewardsModal = ({ disabled }: { disabled?: boolean }) => {
     (percentage: string) => {
       if (colonyClient) {
         const rewardsInverse = bigNumberify(
-          parseFloat(percentage) !== 0 ? 1 / (parseFloat(percentage) / 100) : MAX_U256,
+          parseFloat(percentage) !== 0 ? 1 / (parseFloat(percentage) / 100) : MaxUint256,
         );
         console.log("setting inverse to", rewardsInverse);
         const txs = setRewardInverseTxs(colonyClient, rewardsInverse);
