@@ -5,7 +5,7 @@ import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { BigNumber, BigNumberish } from "ethers/utils";
 import { getPermissionProofs } from "@colony/colony-js/lib/clients/Colony/extensions/commonExtensions";
 import { Zero } from "ethers/constants";
-import { Domain, PermissionProof, MoveFundsBetweenPotsProof } from "../../typings";
+import { Domain, PermissionProof, MoveFundsBetweenPotsProof, Token } from "../../typings";
 import userHasDomainRole from "../../utils/colony/userHasDomainRole";
 import { MAX_U256 } from "../../constants";
 import { useColonyContext } from "./ColonyContext";
@@ -100,10 +100,20 @@ export const useNativeTokenInfo = () => {
   return tokenInfo;
 };
 
-export const useTokens = () => {
+export const useTokens = (): Token[] => {
   const { tokens } = useColonyContext();
 
   return tokens;
+};
+
+export const useToken = (tokenAddress: string): Token | undefined => {
+  const tokens = useTokens();
+
+  const token: Token | undefined = useMemo(() => {
+    return tokens.find(testToken => testToken.address === tokenAddress);
+  }, [tokenAddress, tokens]);
+
+  return token;
 };
 
 export const useRewardInverse = (): BigNumber => {

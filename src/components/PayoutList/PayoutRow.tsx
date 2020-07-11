@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { formatUnits } from "ethers/utils";
 import { TableRow, TableCell } from "@material-ui/core";
 import PayoutModal from "../Modals/PayoutModal";
-import { useTokens } from "../../contexts/ColonyContext";
+import { useToken } from "../../contexts/ColonyContext";
 import { PayoutInfo } from "../../typings";
 
 const PayoutRow = ({ payout }: { payout: PayoutInfo }) => {
-  const tokens = useTokens();
-  const payoutToken = tokens.find(token => token.address === payout.tokenAddress);
+  const payoutToken = useToken(payout.tokenAddress);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   if (!payoutToken) return null;

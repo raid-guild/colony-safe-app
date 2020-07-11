@@ -12,4 +12,5 @@ export {
   useRewardInverse,
   useSetColony,
   useTokens,
+  useToken,
 } from "./hooks";
