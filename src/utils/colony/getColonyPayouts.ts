@@ -32,7 +32,25 @@ const getActivePayouts = async (client: ColonyClient): Promise<PayoutInfo[]> => 
 
   const activePayouts = startedPayouts.filter(payoutId => !endedPayouts.includes(payoutId));
   return Promise.all(
-    activePayouts.map(async payoutId => ({ id: payoutId, ...(await client.getRewardPayoutInfo(payoutId)) })),
+    activePayouts.map(async payoutId => {
+      const {
+        amount,
+        blockTimestamp,
+        colonyWideReputation,
+        reputationState,
+        tokenAddress,
+        totalTokens,
+      } = await client.getRewardPayoutInfo(payoutId);
+      return {
+        id: payoutId,
+        amount,
+        blockTimestamp,
+        colonyWideReputation,
+        reputationState,
+        tokenAddress,
+        totalTokens,
+      };
+    }),
   );
 };
 
