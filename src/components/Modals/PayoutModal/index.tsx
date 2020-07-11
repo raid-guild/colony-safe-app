@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback } from "react";
 import { GenericModal, Text } from "@gnosis.pm/safe-react-components";
-import { formatUnits } from "ethers/utils";
 import ModalFooter from "./ModalFooter";
 import { Token, PayoutInfo } from "../../../typings";
 import { useAppsSdk, useSafeInfo } from "../../../contexts/SafeContext";
@@ -11,12 +10,12 @@ import waivePayoutTxs from "../../../utils/transactions/rewards/waivePayout";
 const PayoutModal = ({
   isOpen,
   setIsOpen,
-  payout,
+  payouts,
   token,
 }: {
   isOpen: boolean;
   setIsOpen: Function;
-  payout: PayoutInfo;
+  payouts: PayoutInfo[];
   token: Token;
 }): ReactElement | null => {
   const safeInfo = useSafeInfo();
@@ -25,25 +24,21 @@ const PayoutModal = ({
 
   const claimPayout = useCallback(async () => {
     if (colonyClient && safeInfo?.safeAddress) {
-      const txs = await claimPayoutTxs(colonyClient, safeInfo.safeAddress, payout);
+      const txs = await Promise.all(payouts.map(payout => claimPayoutTxs(colonyClient, safeInfo.safeAddress, payout)));
       appsSdk.sendTransactions(txs);
     }
-  }, [colonyClient, payout, safeInfo, appsSdk]);
+  }, [colonyClient, payouts, safeInfo, appsSdk]);
 
   const waivePayout = useCallback(async () => {
     if (colonyClient && safeInfo?.safeAddress) {
-      const txs = await waivePayoutTxs(colonyClient, safeInfo.safeAddress, payout);
+      const txs = await Promise.all(payouts.map(payout => waivePayoutTxs(colonyClient, safeInfo.safeAddress, payout)));
       appsSdk.sendTransactions(txs);
     }
-  }, [colonyClient, payout, safeInfo, appsSdk]);
+  }, [colonyClient, payouts, safeInfo, appsSdk]);
 
   const modalBody = (
     <>
-      <Text size="md">
-        {`You may claim or waive your share of the ${formatUnits(payout.amount, token?.decimals)} ${
-          token.symbol
-        } payout.`}
-      </Text>
+      <Text size="md">{`You may claim or waive your share of the ${payouts.length} ${token.symbol} payout(s).`}</Text>
     </>
   );
 

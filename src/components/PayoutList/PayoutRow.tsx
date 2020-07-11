@@ -1,21 +1,26 @@
 import React, { useState } from "react";
-import { formatUnits } from "ethers/utils";
+import { formatUnits, BigNumber } from "ethers/utils";
 import { TableRow, TableCell } from "@material-ui/core";
+import { Zero } from "ethers/constants";
 import PayoutModal from "../Modals/PayoutModal";
 import { useToken } from "../../contexts/ColonyContext";
 import { PayoutInfo } from "../../typings";
 
-const PayoutRow = ({ payout }: { payout: PayoutInfo }) => {
-  const payoutToken = useToken(payout.tokenAddress);
+const PayoutRow = ({ payouts }: { payouts: PayoutInfo[] }) => {
+  const payoutToken = useToken(payouts[0].tokenAddress);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const totalAmount: BigNumber = payouts.reduce((payoutTotal: BigNumber, { amount }) => {
+    return payoutTotal.add(amount);
+  }, Zero);
 
   if (!payoutToken) return null;
   return (
     <>
-      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} payout={payout} token={payoutToken} />
+      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} payouts={payouts} token={payoutToken} />
       <TableRow onClick={() => setIsOpen(true)}>
-        <TableCell>{payoutToken?.symbol || payout.tokenAddress}</TableCell>
-        <TableCell align="right">{formatUnits(payout.amount, payoutToken?.decimals)}</TableCell>
+        <TableCell>{payoutToken?.symbol || payouts[0].tokenAddress}</TableCell>
+        <TableCell align="right">{formatUnits(totalAmount, payoutToken?.decimals)}</TableCell>
       </TableRow>
     </>
   );
