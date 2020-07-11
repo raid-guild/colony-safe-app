@@ -4,4 +4,5 @@ export type Permission = {
   name: string;
   description: string;
   checked: boolean;
+  revokeable: boolean;
 };

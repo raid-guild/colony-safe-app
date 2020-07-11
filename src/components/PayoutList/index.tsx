@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { formatUnits } from "ethers/utils";
 
-import { TableRow, TableCell } from "@material-ui/core";
+import { TableRow, TableCell, TableBody } from "@material-ui/core";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
 import { ColonyRole } from "@colony/colony-js";
@@ -11,41 +11,35 @@ import UnderlinedTableRow from "../common/UnderLinedTableRow";
 import PayoutModal from "../Modals/PayoutModal";
 
 import { useSafeInfo } from "../../contexts/SafeContext";
-import { useColonyClient, useHasDomainPermission } from "../../contexts/ColonyContext";
+import { useColonyClient, useHasDomainPermission, useTokens } from "../../contexts/ColonyContext";
 
-import { REWARDS_FUNDING_POT_ID } from "../../constants";
+import StartPayoutModal from "../Modals/StartPayoutModal";
+import getActivePayouts from "../../utils/colony/getColonyPayouts";
+import { PayoutInfo } from "../../typings";
 
-import { Token } from "../../typings";
-
-const TokenRow = ({ token }: { token: Token }) => {
-  const colonyClient = useColonyClient();
+const PayoutRow = ({ payout }: { payout: PayoutInfo }) => {
+  const tokens = useTokens();
+  const payoutToken = tokens.find(token => token.address === payout.tokenAddress);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [balance, setBalance] = useState<string>("0");
 
-  useEffect(() => {
-    if (colonyClient) {
-      colonyClient
-        .getFundingPotBalance(REWARDS_FUNDING_POT_ID, token.address)
-        .then(tokenBalance => setBalance(tokenBalance.toString()));
-    }
-  }, [colonyClient, token.address]);
-
+  if (!payoutToken) return null;
   return (
     <>
-      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} token={token} />
+      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} payout={payout} token={payoutToken} />
       <TableRow onClick={() => setIsOpen(true)}>
-        <TableCell>{token.symbol}</TableCell>
-        <TableCell align="right">{formatUnits(balance, token.decimals)}</TableCell>
+        <TableCell>{payoutToken?.symbol || payout.tokenAddress}</TableCell>
+        <TableCell align="right">{formatUnits(payout.amount, payoutToken?.decimals)}</TableCell>
       </TableRow>
     </>
   );
 };
 
 const NewPayoutRow = () => {
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <>
-      <UnderlinedTableRow onClick={() => console.log("Opening New Payout modal")}>
+      <StartPayoutModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
         <TableCell>
           <Text size="lg">New Payout</Text>
         </TableCell>
@@ -57,16 +51,26 @@ const NewPayoutRow = () => {
   );
 };
 
-const PayoutList = ({ tokens }: { tokens: Token[] }) => {
+const PayoutList = () => {
   const safeInfo = useSafeInfo();
+  const colonyClient = useColonyClient();
   const hasRootPermission = useHasDomainPermission(safeInfo?.safeAddress, 1, ColonyRole.Root);
+  const [activePayouts, setActivePayouts] = useState<PayoutInfo[]>([]);
 
-  const tokenList = useMemo(() => tokens.map(token => <TokenRow token={token} />), [tokens]);
+  useEffect(() => {
+    if (colonyClient) getActivePayouts(colonyClient).then(setActivePayouts);
+  }, [colonyClient]);
 
+  const payoutList = useMemo(
+    () => activePayouts.map(payout => <PayoutRow key={payout.blockTimestamp.toString()} payout={payout} />),
+    [activePayouts],
+  );
   return (
     <Table>
-      {hasRootPermission && <NewPayoutRow />}
-      {tokenList}
+      <TableBody>
+        {hasRootPermission && <NewPayoutRow />}
+        {payoutList}
+      </TableBody>
     </Table>
   );
 };

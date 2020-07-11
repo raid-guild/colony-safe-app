@@ -1,8 +1,9 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useCallback } from "react";
 import styled from "styled-components";
 
 import { CircularProgress, Button } from "@material-ui/core";
 import { Title, TextField } from "@gnosis.pm/safe-react-components";
+import { getAddress } from "ethers/utils";
 import { useSetColony } from "../contexts/ColonyContext";
 
 const LandingPageWrapper = styled.div`
@@ -21,10 +22,30 @@ const ColonyNameInputWrapper = styled.div`
   justify-content: center;
 `;
 
+const isAddress = (possibleAddress: string): boolean => {
+  try {
+    getAddress(possibleAddress);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 const ColonyENSInput = () => {
   const setColony = useSetColony();
   const [ensName, setEnsName] = useState<string>("");
   const [clicked, setClicked] = useState<boolean>(false);
+
+  const handleColonyNameInput = useCallback(
+    (name: string) => {
+      // If user has given the colony address or full ens name then can use that directly
+      if (isAddress(name) || name.indexOf(".eth") > 0) setColony(name);
+
+      // If not we assume they just gave the colony's subdomain and add the suffix
+      setColony(`${name}.colony.joincolony.eth`);
+    },
+    [setColony],
+  );
 
   if (clicked) return <CircularProgress />;
   return (
@@ -33,11 +54,17 @@ const ColonyENSInput = () => {
         label="Colony Name"
         value={ensName}
         onChange={(e: ChangeEvent<HTMLInputElement>): void => setEnsName(e.target.value)}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>): void => {
+          if (e.key === "Enter") {
+            setClicked(true);
+            handleColonyNameInput(ensName);
+          }
+        }}
       />
       <Button
         onClick={() => {
           setClicked(true);
-          setColony(`${ensName}.colony.joincolony.eth`);
+          handleColonyNameInput(ensName);
         }}
       >
         Confirm

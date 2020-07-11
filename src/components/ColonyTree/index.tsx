@@ -38,7 +38,7 @@ export default function ColonyTree({
   return (
     <TreeView
       className={classes.root}
-      defaultExpanded={["0"]}
+      defaultExpanded={["1"]}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultEndIcon={<div style={{ width: 24 }} />}
@@ -47,9 +47,9 @@ export default function ColonyTree({
       onNodeToggle={handleToggle}
       onNodeSelect={handleSelect}
     >
+      <DomainTreeItems domains={domains} />
       <StyledTreeItem nodeId={ALL_DOMAINS_ID.toString()} labelText="Entire Colony" />
       <StyledTreeItem nodeId={REWARDS_FUNDING_POT_ID.toString()} labelText="Rewards Pot" />
-      <DomainTreeItems domains={domains} />
     </TreeView>
   );
 }

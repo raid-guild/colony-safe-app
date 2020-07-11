@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import { ColonyRole } from "@colony/colony-js";
-import { Button, Text } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
 import { BigNumber } from "ethers/utils";
 import { useHasDomainPermission, useRewardInverse } from "../../contexts/ColonyContext";
 import { useSafeInfo } from "../../contexts/SafeContext";
 import SetRewardsModal from "../Modals/SetRewardsModal";
+import TokenLockingModal from "../Modals/TokenLockingModal";
 
 const PayoutSidebar = () => {
   const safeInfo = useSafeInfo();
@@ -17,9 +18,8 @@ const PayoutSidebar = () => {
     <>
       <Text size="md">{`${rewardsPercentage}% of all incoming revenue is contributed to the rewards pot`}</Text>
       <SetRewardsModal disabled={!hasRootPermission} />
-      <Button size="md" color="primary" onClick={() => console.log("Opening Lock/Unlock Tokens")}>
-        Lock/Unlock Tokens
-      </Button>
+      <TokenLockingModal lock />
+      <TokenLockingModal />
     </>
   );
 };
