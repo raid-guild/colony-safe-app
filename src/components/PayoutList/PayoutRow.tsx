@@ -14,10 +14,10 @@ const PayoutRow = ({ payouts }: { payouts: PayoutInfo[] }) => {
     return payoutTotal.add(amount);
   }, Zero);
 
-  if (!payoutToken) return null;
+  if (payouts.length === 0) return null;
   return (
     <>
-      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} payouts={payouts} token={payoutToken} />
+      <PayoutModal isOpen={isOpen} setIsOpen={setIsOpen} payouts={payouts} />
       <TableRow onClick={() => setIsOpen(true)}>
         <TableCell>{payoutToken?.symbol || payouts[0].tokenAddress}</TableCell>
         <TableCell align="right">{formatUnits(totalAmount, payoutToken?.decimals)}</TableCell>
