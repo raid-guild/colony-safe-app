@@ -5,7 +5,7 @@ import { formatUnits } from "ethers/utils";
 
 import TokenModal from "../Modals/TokenModal";
 import { Token, PermissionProof } from "../../typings";
-import { useDomainTokenBalance, useColonyDomain } from "../../contexts/ColonyContext/hooks";
+import { useDomainTokenBalance, useColonyDomain } from "../../contexts/ColonyContext";
 
 const TokenRow = ({
   token,
