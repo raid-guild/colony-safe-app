@@ -52,6 +52,16 @@ export const useColonyDomains = (): Domain[] => {
   return colonyDomains;
 };
 
+export const useColonyDomain = (domainId: number) => {
+  const domains = useColonyDomains();
+
+  const domain: Domain | undefined = useMemo(() => {
+    return domains.find(testDomain => testDomain.domainId.toNumber() === domainId);
+  }, [domainId, domains]);
+
+  return domain;
+};
+
 export const useColonyVersion = (): BigNumber => {
   const colonyClient = useColonyClient();
   const [colonyVersion, setColonyVersion] = useState<BigNumber>(new BigNumber(0));

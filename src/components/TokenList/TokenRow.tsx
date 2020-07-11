@@ -1,29 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TableRow, TableCell } from "@material-ui/core";
 
-import { formatUnits, bigNumberify } from "ethers/utils";
+import { formatUnits } from "ethers/utils";
 
 import TokenModal from "../Modals/TokenModal";
-import { useColonyClient } from "../../contexts/ColonyContext";
-import { Token, Domain, PermissionProof } from "../../typings";
-import useDomainTokenBalance from "./balance";
-
-const useColonyDomain = (domainId: number) => {
-  const client = useColonyClient();
-  const [domain, setDomain] = useState<Domain>();
-
-  useEffect(() => {
-    if (client && domainId > 0)
-      client
-        .getDomain(domainId)
-        .then(currentDomain =>
-          setDomain({ domainId: bigNumberify(domainId), 2: bigNumberify(domainId), ...currentDomain }),
-        );
-  }, [client, domainId]);
-
-  return domain;
-};
-import { useDomainTokenBalance } from "../../contexts/ColonyContext/hooks";
+import { Token, PermissionProof } from "../../typings";
+import { useDomainTokenBalance, useColonyDomain } from "../../contexts/ColonyContext/hooks";
 
 const TokenRow = ({
   token,
