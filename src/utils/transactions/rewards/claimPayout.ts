@@ -44,8 +44,12 @@ const claimPayoutTxs = async (
   payout: PayoutInfo,
 ): Promise<Transaction[]> => {
   const colonyInterface: Interface = colonyClient.interface;
-  const { id, amount, totalTokens, colonyWideReputation } = payout;
-  const { key, value, branchMask, siblings, reputationAmount } = await getReputationProof(colonyClient, userAddress);
+  const { id, amount, totalTokens, colonyWideReputation, reputationState } = payout;
+  const { key, value, branchMask, siblings, reputationAmount } = await getReputationProof(
+    colonyClient,
+    userAddress,
+    reputationState,
+  );
 
   const tokenLockingClient = await colonyClient.networkClient.getTokenLockingClient();
   const { balance } = await tokenLockingClient.getUserLock(payout.tokenAddress, userAddress);
