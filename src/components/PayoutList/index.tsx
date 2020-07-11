@@ -2,18 +2,16 @@ import React, { useMemo, useState, useEffect } from "react";
 import { formatUnits } from "ethers/utils";
 
 import { TableRow, TableCell, TableBody } from "@material-ui/core";
-import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
 import { ColonyRole } from "@colony/colony-js";
-import Table from "../common/StyledTable";
-import UnderlinedTableRow from "../common/UnderLinedTableRow";
 
+import NewPayoutRow from "./NewPayoutRow";
+import Table from "../common/StyledTable";
 import PayoutModal from "../Modals/PayoutModal";
 
 import { useSafeInfo } from "../../contexts/SafeContext";
 import { useColonyClient, useHasDomainPermission, useTokens } from "../../contexts/ColonyContext";
 
-import StartPayoutModal from "../Modals/StartPayoutModal";
 import getActivePayouts from "../../utils/colony/getColonyPayouts";
 import { PayoutInfo } from "../../typings";
 
@@ -30,23 +28,6 @@ const PayoutRow = ({ payout }: { payout: PayoutInfo }) => {
         <TableCell>{payoutToken?.symbol || payout.tokenAddress}</TableCell>
         <TableCell align="right">{formatUnits(payout.amount, payoutToken?.decimals)}</TableCell>
       </TableRow>
-    </>
-  );
-};
-
-const NewPayoutRow = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  return (
-    <>
-      <StartPayoutModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <UnderlinedTableRow onClick={() => setIsOpen(true)}>
-        <TableCell>
-          <Text size="lg">New Payout</Text>
-        </TableCell>
-        <TableCell align="right">
-          <Icon type="add" size="md" />
-        </TableCell>
-      </UnderlinedTableRow>
     </>
   );
 };
