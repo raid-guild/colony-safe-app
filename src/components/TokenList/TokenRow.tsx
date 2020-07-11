@@ -23,6 +23,7 @@ const useColonyDomain = (domainId: number) => {
 
   return domain;
 };
+import { useDomainTokenBalance } from "../../contexts/ColonyContext/hooks";
 
 const TokenRow = ({
   token,

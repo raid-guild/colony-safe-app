@@ -4,10 +4,12 @@ import { ColonyClient, ColonyRoles, ColonyRole, getMoveFundsPermissionProofs } f
 import { TokenInfo } from "@colony/colony-js/lib/clients/TokenClient";
 import { BigNumber, BigNumberish } from "ethers/utils";
 import { getPermissionProofs } from "@colony/colony-js/lib/clients/Colony/extensions/commonExtensions";
+import { Zero } from "ethers/constants";
 import { Domain, PermissionProof, MoveFundsBetweenPotsProof } from "../../typings";
 import userHasDomainRole from "../../utils/colony/userHasDomainRole";
 import { MAX_U256 } from "../../constants";
 import { useColonyContext } from "./ColonyContext";
+import getDomainTokenBalance from "../../utils/colony/getDomainTokenBalance";
 
 export const useColonyClient = (): ColonyClient | undefined => {
   const { colonyClient } = useColonyContext();
@@ -166,4 +168,20 @@ export const useOneTx = (
   }, [client, domainId, role, userAddress]);
 
   return permissionProof;
+};
+
+export const useDomainTokenBalance = (domainId: BigNumberish, token: string): BigNumber => {
+  const colonyClient = useColonyClient();
+  const colonyDomains = useColonyDomains();
+  const [balance, setBalance] = useState<BigNumber>(Zero);
+
+  useEffect(() => {
+    if (colonyClient) {
+      getDomainTokenBalance(colonyClient, colonyDomains, domainId, token).then(tokenBalance =>
+        setBalance(tokenBalance),
+      );
+    }
+  }, [colonyClient, colonyDomains, domainId, token]);
+
+  return balance;
 };
