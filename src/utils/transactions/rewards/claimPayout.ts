@@ -20,6 +20,24 @@ const bnSqrt = (bn: BigNumber, isGreater?: boolean) => {
   return b;
 };
 
+const calculateSquareRoots = (
+  amount: BigNumber,
+  balance: BigNumber,
+  totalTokens: BigNumber,
+  reputationAmount: BigNumber,
+  totalReputation: BigNumber,
+) => {
+  const squareRoots: BigNumber[] = [Zero, Zero, Zero, Zero, Zero, Zero, Zero];
+  squareRoots[0] = bnSqrt(reputationAmount);
+  squareRoots[1] = bnSqrt(balance);
+  squareRoots[2] = bnSqrt(totalReputation, true);
+  squareRoots[3] = bnSqrt(totalTokens, true);
+  squareRoots[4] = bnSqrt(squareRoots[0].mul(squareRoots[1]));
+  squareRoots[5] = bnSqrt(squareRoots[2].mul(squareRoots[3]), true);
+  squareRoots[6] = bnSqrt(amount);
+  return squareRoots;
+};
+
 const claimPayoutTxs = async (
   colonyClient: ColonyClient,
   userAddress: string,
@@ -32,14 +50,7 @@ const claimPayoutTxs = async (
   const tokenLockingClient = await colonyClient.networkClient.getTokenLockingClient();
   const { balance } = await tokenLockingClient.getUserLock(payout.tokenAddress, userAddress);
 
-  const squareRoots: BigNumber[] = [Zero, Zero, Zero, Zero, Zero, Zero, Zero];
-  squareRoots[0] = bnSqrt(reputationAmount);
-  squareRoots[1] = bnSqrt(balance);
-  squareRoots[2] = bnSqrt(colonyWideReputation, true);
-  squareRoots[3] = bnSqrt(totalTokens, true);
-  squareRoots[4] = bnSqrt(squareRoots[0].mul(squareRoots[1]));
-  squareRoots[5] = bnSqrt(squareRoots[2].mul(squareRoots[3]), true);
-  squareRoots[6] = bnSqrt(amount);
+  const squareRoots = calculateSquareRoots(amount, balance, totalTokens, reputationAmount, colonyWideReputation);
 
   const txs: Transaction[] = [];
 
